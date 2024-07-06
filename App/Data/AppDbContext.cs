@@ -10,16 +10,24 @@ namespace App.Data
         {
         }
 
-        public DbSet<Goal> Goal { get; set; }
+        public DbSet<Goal> Goals { get; set; }
+        public DbSet<Progress> Progresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Add a unique Id
             modelBuilder.Entity<Goal>()
                 .HasIndex(e => e.Id)
                 .IsUnique();
+                
+            modelBuilder.Entity<Progress>()
+                .HasIndex(p => new { p.Id, p.GoalId, p.Date })
+                .IsUnique()
+                .HasOne(p => p.Goal)
+                .WithMany(u => u.Progresses)
+                .HasForeignKey(p => p.GoalId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
