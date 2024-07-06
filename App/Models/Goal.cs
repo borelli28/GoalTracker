@@ -17,4 +17,6 @@ public class Goal
     public string Description { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    
+    public ICollection<Progress>? Progresses { get; set; }
 }
