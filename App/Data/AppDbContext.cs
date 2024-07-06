@@ -23,7 +23,9 @@ namespace App.Data
                 
             modelBuilder.Entity<Progress>()
                 .HasIndex(p => new { p.Id, p.GoalId, p.Date })
-                .IsUnique()
+                .IsUnique();
+            
+            modelBuilder.Entity<Progress>()
                 .HasOne(p => p.Goal)
                 .WithMany(u => u.Progresses)
                 .HasForeignKey(p => p.GoalId)
