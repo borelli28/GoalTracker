@@ -3,20 +3,24 @@ using System.ComponentModel.DataAnnotations;
 
 namespace App.Models;
 
-public class Goal
+public class Progress
 {   
     [Key]
     [StringLength(10)]
     public string Id { get; set; } = Guid.NewGuid().ToString().Substring(0, 10);
 
     [Required]
-    [StringLength(30)]
-    public string Name { get; set; } = string.Empty;
+    public DateTime Date { get; set; } = DateTime.UtcNow;
+
+    [Required]
+    public bool Completed { get; set; } = false;
 
     [StringLength(90)]
-    public string Description { get; set; } = string.Empty;
+    public string Notes { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     
-    public ICollection<Progress>? Progresses { get; set; }
+    [Required]
+    public string GoalId { get; set; }
+    public Goal? Goal { get; set; }
 }
