@@ -3,8 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-Migrations/*
-/Migrations
+# Ignore Migrations folder
+Migrations/
+**/Migrations/
 
 # dotenv files
 .env
