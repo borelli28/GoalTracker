@@ -17,4 +17,30 @@ public class GoalController : Controller
         _logger = logger;
         _goalService = goalService;
     }
+    
+    public IActionResult Create()
+    {
+        return View();
+    }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create([Bind("Name,Description")] Goal goal)
+    {
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                await _goalService.CreateGoalAsync(goal);
+                TempData["SuccessMessage"] = "Goal added";
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error creating goal: {ex}");
+                ModelState.AddModelError("", "Unable to create Goal");
+            }
+        }
+        return View(goal);
+    }
 }
