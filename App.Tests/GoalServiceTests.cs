@@ -23,7 +23,7 @@ namespace App.UnitTests.Services
                 .Options;
 
             _context = new AppDbContext(options);
-            _jobService = new JobService(_context);
+            _goalService = new GoalService(_context);
         }
 
         [TearDown]
@@ -31,6 +31,20 @@ namespace App.UnitTests.Services
         {
             _context.Database.EnsureDeleted();
             _context.Dispose();
+        }
+        
+        [Test]
+        public async Task CreateGoalAsync_ShouldAddGoalAndReturnIt()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Title = "New Goal" };
+
+            // Act
+            var result = await _goalService.CreateGoalAsync(goal);
+
+            // Assert
+            Assert.That(result, Is.EqualTo(goal));
+            Assert.That(_context.Goals.Count(), Is.EqualTo(1));
         }
     }
 }
