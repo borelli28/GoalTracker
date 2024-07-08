@@ -103,4 +103,31 @@ public class GoalController : Controller
         }
         return View(goal);
     }
+    
+    public async Task<IActionResult> Delete(string id)
+    {   
+        var goal = await _goalService.GetGoalByIdAsync(id);
+        if (goal == null)
+        {
+            return NotFound();
+        }
+        return View(goal);
+    }
+    
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(string id)
+    {
+        try
+        {
+            await _goalService.DeleteGoalAsync(id);
+            TempData["SuccessMessage"] = "Goal deleted";
+            return RedirectToAction("Index", "Goal");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception raised while deleting goal");
+            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the goal.");
+        }
+    }
 }
