@@ -37,7 +37,7 @@ namespace App.UnitTests.Services
         public async Task CreateGoalAsync_ShouldAddGoalAndReturnIt()
         {
             // Arrange
-            var goal = new Goal { Id = "1", Title = "New Goal" };
+            var goal = new Goal { Id = "1", Name = "New Goal" };
 
             // Act
             var result = await _goalService.CreateGoalAsync(goal);
