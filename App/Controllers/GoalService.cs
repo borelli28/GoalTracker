@@ -13,6 +13,7 @@ public interface IGoalService
     Task UpdateGoalAsync(Goal goal);
     Task DeleteGoalAsync(string id);
     Task<IEnumerable<Goal>> GetAllGoalsAsync();
+    Task<bool> GoalExistsAsync(string id);
 }
 
 public class GoalService : IGoalService
@@ -55,5 +56,10 @@ public class GoalService : IGoalService
     public async Task<IEnumerable<Goal>> GetAllGoalsAsync()
     {
         return await _context.Goals.ToListAsync();
+    }
+    
+    public async Task<bool> GoalExistsAsync(string id)
+    {
+        return await _context.Goals.AnyAsync(e => e.Id == id);
     }
 }
