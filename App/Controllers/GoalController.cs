@@ -44,7 +44,7 @@ public class GoalController : Controller
         return View(goal);
     }
     
-    public async Task<IActionResult> Edit(string id)
+    public async Task<IActionResult> Update(string id)
     {
         var goal = await _goalService.GetGoalByIdAsync(id);
         if (goal == null)
@@ -56,7 +56,7 @@ public class GoalController : Controller
     
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(string id, [Bind("Id,Name,Description")] Goal goal)
+    public async Task<IActionResult> Update(string id, [Bind("Id,Name,Description")] Goal goal)
     {
         if (id != goal.Id)
         {
