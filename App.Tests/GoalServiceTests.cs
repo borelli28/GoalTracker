@@ -95,5 +95,22 @@ namespace App.UnitTests.Services
             var deletedGoal = await _context.Goals.FindAsync("1");
             Assert.That(deletedGoal, Is.Null);
         }
+        
+        [Test]
+        public async Task GetAllGoalsAsync_ShouldReturnAllGoals()
+        {
+            // Arrange
+            await _context.Goals.AddRangeAsync(
+                new Goal { Id = "1", Name = "Goal 1" },
+                new Goal { Id = "2", Name = "Goal 2" }
+            );
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _goalService.GetAllGoalsAsync();
+
+            // Assert
+            Assert.That(result.Count(), Is.EqualTo(2));
+        }
     }
 }
