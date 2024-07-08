@@ -9,7 +9,7 @@ namespace App.Services;
 public interface IGoalService
 {
     Task<Goal> CreateGoalAsync(Goal goal);
-    Task<Goal> GetGoalByIdAsync(string id);
+    Task<Goal?> GetGoalByIdAsync(string id);
     Task UpdateGoalAsync(Goal goal);
     Task DeleteGoalAsync(string id);
     Task<IEnumerable<Goal>> GetAllGoalsAsync();
@@ -32,7 +32,7 @@ public class GoalService : IGoalService
         return goal;
     }
     
-    public async Task<Goal> GetGoalByIdAsync(string id)
+    public async Task<Goal?> GetGoalByIdAsync(string id)
     {
         return await _context.Goals.FirstOrDefaultAsync(m => m.Id == id);
     }
