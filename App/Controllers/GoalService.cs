@@ -11,6 +11,7 @@ public interface IGoalService
     Task<Goal> CreateGoalAsync(Goal goal);
     Task<Goal> GetGoalByIdAsync(string id);
     Task UpdateGoalAsync(Goal goal);
+    Task DeleteGoalAsync(string id);
 }
 
 public class GoalService : IGoalService
@@ -38,5 +39,15 @@ public class GoalService : IGoalService
     {
         _context.Update(goal);
         await _context.SaveChangesAsync();
+    }
+    
+    public async Task DeleteGoalAsync(string id)
+    {
+        var goal = await GetGoalByIdAsync(id);
+        if (goal != null)
+        {
+            _context.Goals.Remove(goal);
+            await _context.SaveChangesAsync();
+        }
     }
 }
