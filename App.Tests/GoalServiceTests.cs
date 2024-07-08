@@ -112,5 +112,30 @@ namespace App.UnitTests.Services
             // Assert
             Assert.That(result.Count(), Is.EqualTo(2));
         }
+        
+        [Test]
+        public async Task GoalExistsAsync_ShouldReturnTrueForExistingGoal()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Existing Goal" };
+            await _context.Goals.AddAsync(goal);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _goalService.GoalExistsAsync("1");
+
+            // Assert
+            Assert.That(result, Is.True);
+        }
+        
+        [Test]
+        public async Task GoalExistsAsync_ShouldReturnFalseForNonExistingGoal()
+        {
+            // Act
+            var result = await _goalService.GoalExistsAsync("999");
+
+            // Assert
+            Assert.That(result, Is.False);
+        }
     }
 }
