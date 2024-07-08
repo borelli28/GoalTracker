@@ -18,6 +18,24 @@ public class GoalController : Controller
         _goalService = goalService;
     }
     
+    public async Task<IActionResult> Index()
+    {
+        try
+        {
+            var goals = await _goalService.GetAllGoalsAsync();
+            if (!goals.Any())
+            {
+                return View(null);
+            }
+            return View(goals);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occured while fetching goals");
+            return View(null);
+        }
+    }
+    
     public IActionResult Create()
     {
         return View();
