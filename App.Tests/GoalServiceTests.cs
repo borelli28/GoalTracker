@@ -46,5 +46,20 @@ namespace App.UnitTests.Services
             Assert.That(result, Is.EqualTo(goal));
             Assert.That(_context.Goals.Count(), Is.EqualTo(1));
         }
+        
+        [Test]
+        public async Task GetGoalByIdAsync_ShouldReturnGoal()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Test Goal" };
+            await _context.Goals.AddAsync(goal);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _goalService.GetGoalByIdAsync("1");
+
+            // Assert
+            Assert.That(result, Is.EqualTo(goal));
+        }
     }
 }
