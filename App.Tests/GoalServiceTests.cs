@@ -79,5 +79,21 @@ namespace App.UnitTests.Services
             var updatedGoal = await _context.Goals.FindAsync("1");
             Assert.That(updatedGoal.Name, Is.EqualTo("Updated Goal"));
         }
+        
+        [Test]
+        public async Task DeleteGoalAsync_ShouldRemoveGoal()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Goal to Delete" };
+            await _context.Goals.AddAsync(goal);
+            await _context.SaveChangesAsync();
+
+            // Act
+            await _goalService.DeleteGoalAsync("1");
+
+            // Assert
+            var deletedGoal = await _context.Goals.FindAsync("1");
+            Assert.That(deletedGoal, Is.Null);
+        }
     }
 }
