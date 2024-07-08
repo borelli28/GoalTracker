@@ -9,6 +9,7 @@ namespace App.Services;
 public interface IGoalService
 {
     Task<Goal> CreateGoalAsync(Goal goal);
+    Task<Goal> GetGoalByIdAsync(string id);
 }
 
 public class GoalService : IGoalService
@@ -25,5 +26,10 @@ public class GoalService : IGoalService
         _context.Add(goal);
         await _context.SaveChangesAsync();
         return goal;
+    }
+    
+    public async Task<Goal> GetGoalByIdAsync(string id)
+    {
+        return await _context.Goals.FirstOrDefaultAsync(m => m.Id == id);
     }
 }
