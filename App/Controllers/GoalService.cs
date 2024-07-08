@@ -10,6 +10,7 @@ public interface IGoalService
 {
     Task<Goal> CreateGoalAsync(Goal goal);
     Task<Goal> GetGoalByIdAsync(string id);
+    Task UpdateGoalAsync(Goal goal);
 }
 
 public class GoalService : IGoalService
@@ -31,5 +32,11 @@ public class GoalService : IGoalService
     public async Task<Goal> GetGoalByIdAsync(string id)
     {
         return await _context.Goals.FirstOrDefaultAsync(m => m.Id == id);
+    }
+    
+    public async Task UpdateGoalAsync(Goal goal)
+    {
+        _context.Update(goal);
+        await _context.SaveChangesAsync();
     }
 }
