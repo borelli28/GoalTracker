@@ -1,5 +1,14 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model IEnumerable<App.Models.Goal>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
 }
 
 <div class="text-center">
