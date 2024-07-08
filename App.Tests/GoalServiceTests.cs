@@ -61,5 +61,23 @@ namespace App.UnitTests.Services
             // Assert
             Assert.That(result, Is.EqualTo(goal));
         }
+        
+        [Test]
+        public async Task UpdateGoalAsync_ShouldUpdateGoal()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Original Goal" };
+            await _context.Goals.AddAsync(goal);
+            await _context.SaveChangesAsync();
+
+            goal.Name = "Updated Goal";
+
+            // Act
+            await _goalService.UpdateGoalAsync(goal);
+
+            // Assert
+            var updatedGoal = await _context.Goals.FindAsync("1");
+            Assert.That(updatedGoal.Name, Is.EqualTo("Updated Goal"));
+        }
     }
 }
