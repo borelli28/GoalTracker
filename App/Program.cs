@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using App.Data;
+using App.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// GoalService Registration
+builder.Services.AddScoped<IGoalService, GoalService>();
+    
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
