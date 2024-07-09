@@ -14,6 +14,7 @@ public interface IProgressService
     Task UpdateProgressAsync(Progress progress);
     Task DeleteProgressAsync(string id);
     Task<IEnumerable<Progress>> GetAllProgressAsync();
+    Task<bool> ProgressExistsAsync(string id);
 }
 
 public class ProgressService : IProgressService
@@ -58,5 +59,10 @@ public class ProgressService : IProgressService
     public async Task<IEnumerable<Progress>> GetAllProgressAsync()
     {
         return await _context.Progresses.ToListAsync();
+    }
+    
+    public async Task<bool> ProgressExistsAsync(string id)
+    {
+        return await _context.Progresses.AnyAsync(e => e.Id == id);
     }
 }
