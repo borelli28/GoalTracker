@@ -1,11 +1,11 @@
-using NUnit.Framework;
-using App.Services;
-using App.Models;
-using App.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using App.Services;
+using System.Linq;
+using App.Models;
+using App.Data;
 
 namespace App.UnitTests.Services
 {
