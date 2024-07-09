@@ -12,6 +12,7 @@ public interface IProgressService
     Task<Progress> CreateProgressAsync(Progress progress);
     Task<Progress> GetProgressByIdAsync(string id);
     Task UpdateProgressAsync(Progress progress);
+    Task DeleteProgressAsync(string id);
 }
 
 public class ProgressService : IProgressService
@@ -41,5 +42,15 @@ public class ProgressService : IProgressService
     {
         _context.Update(progress);
         await _context.SaveChangesAsync();
+    }
+    
+    public async Task DeleteProgressAsync(string id)
+    {
+        var progress = await GetProgressByIdAsync(id);
+        if (progress != null)
+        {
+            _context.Remove(progress);
+            await _context.SaveChangesAsync();
+        }
     }
 }
