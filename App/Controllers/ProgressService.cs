@@ -10,7 +10,7 @@ namespace App.Services;
 public interface IProgressService
 {
     Task<Progress> CreateProgressAsync(Progress progress);
-    Task<Progress> GetProgressByIdAsync(string id);
+    Task<Progress?> GetProgressByIdAsync(string id);
     Task UpdateProgressAsync(Progress progress);
     Task DeleteProgressAsync(string id);
     Task<IEnumerable<Progress>> GetAllProgressAsync();
