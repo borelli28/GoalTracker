@@ -127,5 +127,32 @@ namespace App.UnitTests.Services
             // Assert
             Assert.AreEqual(2, result.Count());
         }
+        
+        [Test]
+        public async Task ProgressExistsAsync_ShouldReturnTrueForExistingProgress()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "New Goal" };
+            await _goalService.CreateGoalAsync(goal);
+    
+            var progress = new Progress { GoalId = goal.Id };
+            await _progressService.CreateProgressAsync(progress);
+    
+            // Act
+            var result = await _progressService.ProgressExistsAsync(progress.Id);
+    
+            // Assert
+            Assert.IsTrue(result);
+        }
+    
+        [Test]
+        public async Task ProgressExistsAsync_ShouldReturnFalseForNonExistingProgress()
+        {
+            // Act
+            var result = await _progressService.ProgressExistsAsync("ThisIdDontExists");
+    
+            // Assert
+            Assert.IsFalse(result);
+        }
     }
 }
