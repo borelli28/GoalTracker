@@ -74,10 +74,11 @@ namespace App.UnitTests.Services
 
             // Act
             await _goalService.UpdateGoalAsync(goal);
+            var result = await _goalService.GetGoalByIdAsync(goal.Id);
 
             // Assert
-            var updatedGoal = await _context.Goals.FindAsync("1");
-            Assert.That(updatedGoal.Name, Is.EqualTo("Updated Goal"));
+            Assert.IsNotNull(result);
+            Assert.That(result.Name, Is.EqualTo("Updated Goal"));
         }
         
         [Test]
