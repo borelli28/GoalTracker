@@ -90,5 +90,23 @@ namespace App.UnitTests.Services
             Assert.IsNotNull(result);
             Assert.AreEqual(true, result.Completed);
         }
+        
+        [Test]
+        public async Task DeleteProgressAsync_ShouldRemoveProgress()
+        {
+            // Arrange
+            var goal = new Goal { /* Initialize with required properties */ };
+            await _goalService.CreateGoalAsync(goal);
+    
+            var progress = new Progress { GoalId = goal.Id };
+            await _progressService.CreateProgressAsync(progress);
+            
+            // Act
+            await _progressService.DeleteProgressAsync(progress.Id);
+            
+            // Assert
+            var deletedProgress = await _progressService.GetProgressByIdAsync(progress.Id);
+            Assert.IsNull(deletedProgress);
+        }
     }
 }
