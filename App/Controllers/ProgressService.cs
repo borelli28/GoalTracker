@@ -11,6 +11,7 @@ public interface IProgressService
 {
     Task<Progress> CreateProgressAsync(Progress progress);
     Task<Progress> GetProgressByIdAsync(string id);
+    Task UpdateProgressAsync(Progress progress);
 }
 
 public class ProgressService : IProgressService
@@ -34,5 +35,11 @@ public class ProgressService : IProgressService
     public async Task<Progress?> GetProgressByIdAsync(string id)
     {
         return await _context.Progress.FirstOrDefaultAsync(m => m.Id == id);
+    }
+    
+    public async Task UpdateProgressAsync(Progress progress)
+    {
+        _context.Update(progress);
+        await _context.SaveChangesAsync();
     }
 }
