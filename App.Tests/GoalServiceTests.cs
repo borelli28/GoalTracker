@@ -1,11 +1,11 @@
-using NUnit.Framework;
-using App.Services;
-using App.Models;
-using App.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
+using App.Services;
+using System.Linq;
+using App.Models;
+using App.Data;
 
 namespace App.UnitTests.Services
 {
@@ -74,10 +74,11 @@ namespace App.UnitTests.Services
 
             // Act
             await _goalService.UpdateGoalAsync(goal);
+            var result = await _goalService.GetGoalByIdAsync(goal.Id);
 
             // Assert
-            var updatedGoal = await _context.Goals.FindAsync("1");
-            Assert.That(updatedGoal.Name, Is.EqualTo("Updated Goal"));
+            Assert.IsNotNull(result);
+            Assert.That(result.Name, Is.EqualTo("Updated Goal"));
         }
         
         [Test]
