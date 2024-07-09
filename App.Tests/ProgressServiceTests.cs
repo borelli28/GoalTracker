@@ -42,7 +42,7 @@ namespace App.UnitTests.Services
             var goal = new Goal { Id = "1", Name = "New Goal" };
             await _goalService.CreateGoalAsync(goal);
             
-            var progress = new Progress { Id = "1", GoalId = goal.Id };
+            var progress = new Progress { GoalId = goal.Id };
             
             // Act
             var result = await _progressService.CreateProgressAsync(progress);
