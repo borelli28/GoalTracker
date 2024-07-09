@@ -52,5 +52,23 @@ namespace App.UnitTests.Services
             Assert.AreEqual(progress.Id, result.Id);
             Assert.AreEqual(progress.GoalId, result.GoalId);
         }
+        
+        [Test]
+        public async Task GetProgressByIdAsync_ShouldReturnProgress()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "New Goal" };
+            await _goalService.CreateGoalAsync(goal);
+            
+            var progress = new Progress { GoalId = goal.Id };
+            await _progressService.CreateProgressAsync(progress);
+            
+            // Act
+            var result = await _progressService.GetProgressByIdAsync(progress.Id);
+            
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(progress.Id, result.Id);
+        }
     }
 }
