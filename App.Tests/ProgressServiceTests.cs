@@ -16,7 +16,7 @@ namespace App.UnitTests.Services
         private IGoalService _goalService;
         private IProgressService _progressService;
     
-        [Setup]
+        [SetUp]
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<AppDbContext>()
