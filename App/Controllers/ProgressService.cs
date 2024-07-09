@@ -36,7 +36,7 @@ public class ProgressService : IProgressService
     
     public async Task<Progress?> GetProgressByIdAsync(string id)
     {
-        return await _context.Progress.FirstOrDefaultAsync(m => m.Id == id);
+        return await _context.Progresses.FirstOrDefaultAsync(m => m.Id == id);
     }
     
     public async Task UpdateProgressAsync(Progress progress)
@@ -50,7 +50,7 @@ public class ProgressService : IProgressService
         var progress = await GetProgressByIdAsync(id);
         if (progress != null)
         {
-            _context.Remove(progress);
+            _context.Progresses.Remove(progress);
             await _context.SaveChangesAsync();
         }
     }
