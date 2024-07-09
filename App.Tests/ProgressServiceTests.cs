@@ -108,5 +108,24 @@ namespace App.UnitTests.Services
             var deletedProgress = await _progressService.GetProgressByIdAsync(progress.Id);
             Assert.IsNull(deletedProgress);
         }
+        
+        [Test]
+        public async Task GetAllProgressAsync_ShouldReturnAllProgress()
+        {
+            // Arrange
+            var goal = new Goal { /* Initialize with required properties */ };
+            await _goalService.CreateGoalAsync(goal);
+    
+            var progress1 = new Progress { GoalId = goal.Id };
+            var progress2 = new Progress { GoalId = goal.Id };
+            await _progressService.CreateProgressAsync(progress1);
+            await _progressService.CreateProgressAsync(progress2);
+            
+            // Act
+            var allProgressInstances = await _progressService.GetAllProgressAsync();
+            
+            // Assert
+            Assert.AreEqual(2, result.Count());
+        }
     }
 }
