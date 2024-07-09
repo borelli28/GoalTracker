@@ -49,8 +49,8 @@ namespace App.UnitTests.Services
             
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(progress.Id, result.Id);
-            Assert.AreEqual(progress.GoalId, result.GoalId);
+            Assert.That(result.Id, Is.EqualTo(progress.Id));
+            Assert.That(result.GoalId, Is.EqualTo(progress.GoalId));
         }
         
         [Test]
@@ -68,7 +68,7 @@ namespace App.UnitTests.Services
             
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(progress.Id, result.Id);
+            Assert.That(result.Id, Is.EqualTo(progress.Id));
         }
         
         [Test]
@@ -77,7 +77,7 @@ namespace App.UnitTests.Services
             // Arrange
             var goal = new Goal { Id = "1", Name = "New Goal" };
             await _goalService.CreateGoalAsync(goal);
-            
+
             var progress = new Progress { GoalId = goal.Id };
             await _progressService.CreateProgressAsync(progress);
             
@@ -88,7 +88,7 @@ namespace App.UnitTests.Services
             
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(true, result.Completed);
+            Assert.That(result.Completed, Is.EqualTo(true));
         }
         
         [Test]
