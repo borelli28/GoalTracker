@@ -95,7 +95,7 @@ namespace App.UnitTests.Services
         public async Task DeleteProgressAsync_ShouldRemoveProgress()
         {
             // Arrange
-            var goal = new Goal { /* Initialize with required properties */ };
+            var goal = new Goal { Id = "1", Name = "New Goal" };
             await _goalService.CreateGoalAsync(goal);
     
             var progress = new Progress { GoalId = goal.Id };
@@ -113,7 +113,7 @@ namespace App.UnitTests.Services
         public async Task GetAllProgressAsync_ShouldReturnAllProgress()
         {
             // Arrange
-            var goal = new Goal { /* Initialize with required properties */ };
+            var goal = new Goal { Id = "1", Name = "New Goal" };
             await _goalService.CreateGoalAsync(goal);
     
             var progress1 = new Progress { GoalId = goal.Id };
