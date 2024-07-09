@@ -34,5 +34,23 @@ namespace App.UnitTests.Services
             _context.Database.EnsureDeleted();
             _context.Dispose();
         }
+        
+        [Test]
+        public async Task CreateProgressAsync_ShouldCreateAndReturnProgress()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "New Goal" };
+            await _goalService.CreateGoalAsync(goal);
+            
+            var progress = new Progress { Id = "1" };
+            
+            // Act
+            var result = await _progressService.CreateProgressAsync(progress);
+            
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(progress.Id, result.Id);
+            Assert.AreEqual(progress.GoalId, result.GoalId);
+        }
     }
 }
