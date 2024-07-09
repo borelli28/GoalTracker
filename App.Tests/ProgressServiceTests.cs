@@ -125,7 +125,7 @@ namespace App.UnitTests.Services
             var allProgressInstances = await _progressService.GetAllProgressAsync();
             
             // Assert
-            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual(2, allProgressInstances.Count());
         }
         
         [Test]
