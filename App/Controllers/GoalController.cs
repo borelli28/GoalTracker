@@ -11,11 +11,13 @@ public class GoalController : Controller
 {
     private readonly ILogger<GoalController> _logger;
     private readonly IGoalService _goalService;
+     private readonly IProgressService _progressService;
     
-    public GoalController(ILogger<GoalController> logger, IGoalService goalService)
+    public GoalController(ILogger<GoalController> logger, IGoalService goalService, IProgressService progressService)
     {
         _logger = logger;
         _goalService = goalService;
+        _progressService = progressService;
     }
     
     public async Task<IActionResult> Index()
