@@ -9,7 +9,7 @@ namespace App.Services;
 
 public interface IProgressService
 {
-    Task<Progress> CreateProgressAsync(Progress progress);
+    Task<Progress> CreateProgressAsync(string goalId, Progress progress = null);
     Task<Progress?> GetProgressByIdAsync(string id);
     Task UpdateProgressAsync(Progress progress);
     Task DeleteProgressAsync(string id);
@@ -28,8 +28,16 @@ public class ProgressService : IProgressService
         _goalService = goalService;
     }
     
-    public async Task<Progress> CreateProgressAsync(Progress progress)
+    public async Task<Progress> CreateProgressAsync(string goalId, Progress progress = null)
     {
+        if (progress == null)
+        {
+            progress = new Progress
+            {
+                GoalId = goalId
+            };
+        }
+    
         _context.Add(progress);
         await _context.SaveChangesAsync();
         return progress;
