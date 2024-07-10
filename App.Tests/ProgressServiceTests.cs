@@ -41,16 +41,34 @@ namespace App.UnitTests.Services
             // Arrange
             var goal = new Goal { Id = "1", Name = "New Goal" };
             await _goalService.CreateGoalAsync(goal);
+
+            // Act
+            var result = await _progressService.CreateProgressAsync(goal.Id);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.GoalId, Is.EqualTo(goal.Id));
+            Assert.That(result.Completed, Is.False);
+            Assert.That(result.Notes, Is.Empty);
+        }
+        
+        [Test]
+        public async Task CreateProgressAsync_WithExistingProgress_ShouldCreateAndReturnProgress()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "New Goal" };
+            await _goalService.CreateGoalAsync(goal);
             
-            var progress = new Progress { GoalId = goal.Id };
+            var progress = new Progress { GoalId = goal.Id, Notes = "Custom note" };
             
             // Act
-            var result = await _progressService.CreateProgressAsync(progress);
+            var result = await _progressService.CreateProgressAsync(goal.Id, progress);
             
             // Assert
             Assert.IsNotNull(result);
             Assert.That(result.Id, Is.EqualTo(progress.Id));
-            Assert.That(result.GoalId, Is.EqualTo(progress.GoalId));
+            Assert.That(result.GoalId, Is.EqualTo(goal.Id));
+            Assert.That(result.Notes, Is.EqualTo("Custom note"));
         }
         
         [Test]
@@ -61,7 +79,7 @@ namespace App.UnitTests.Services
             await _goalService.CreateGoalAsync(goal);
             
             var progress = new Progress { GoalId = goal.Id };
-            await _progressService.CreateProgressAsync(progress);
+            await _progressService.CreateProgressAsync(goal.Id, progress);
             
             // Act
             var result = await _progressService.GetProgressByIdAsync(progress.Id);
@@ -79,7 +97,7 @@ namespace App.UnitTests.Services
             await _goalService.CreateGoalAsync(goal);
 
             var progress = new Progress { GoalId = goal.Id };
-            await _progressService.CreateProgressAsync(progress);
+            await _progressService.CreateProgressAsync(goal.Id, progress);
             
             // Act
             progress.Completed = true;
@@ -99,7 +117,7 @@ namespace App.UnitTests.Services
             await _goalService.CreateGoalAsync(goal);
     
             var progress = new Progress { GoalId = goal.Id };
-            await _progressService.CreateProgressAsync(progress);
+            await _progressService.CreateProgressAsync(goal.Id, progress);
             
             // Act
             await _progressService.DeleteProgressAsync(progress.Id);
@@ -118,8 +136,8 @@ namespace App.UnitTests.Services
     
             var progress1 = new Progress { GoalId = goal.Id };
             var progress2 = new Progress { GoalId = goal.Id };
-            await _progressService.CreateProgressAsync(progress1);
-            await _progressService.CreateProgressAsync(progress2);
+            await _progressService.CreateProgressAsync(goal.Id, progress1);
+            await _progressService.CreateProgressAsync(goal.Id, progress2);
             
             // Act
             var allProgressInstances = await _progressService.GetAllProgressAsync();
@@ -136,7 +154,7 @@ namespace App.UnitTests.Services
             await _goalService.CreateGoalAsync(goal);
     
             var progress = new Progress { GoalId = goal.Id };
-            await _progressService.CreateProgressAsync(progress);
+            await _progressService.CreateProgressAsync(goal.Id, progress);
     
             // Act
             var result = await _progressService.ProgressExistsAsync(progress.Id);
