@@ -51,7 +51,9 @@ public class GoalController : Controller
         {
             try
             {
-                await _goalService.CreateGoalAsync(goal);
+                var newGoal = await _goalService.CreateGoalAsync(goal);
+                var newProgress = await _progressService.CreateProgressAsync(newGoal.Id);
+                
                 TempData["SuccessMessage"] = "Goal added";
                 return RedirectToAction("Index", "Home");
             }
