@@ -5,7 +5,7 @@ using App.Services;
 using App.Models;
 using System;
 
-namespace App.Services;
+namespace App.Controllers;
 
 public class GoalController : Controller
 {
