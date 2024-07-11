@@ -30,31 +30,28 @@ public class ProgressController : Controller
     
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Update(string id, [Bind("Id,Completed,Notes")] Progress progress)
+    public async Task<IActionResult> Update(string id, [Bind("Id,GoalId,Completed,Notes")] Progress progress)
     {
         if (id != progress.Id)
         {
             return NotFound();
         }
-        else if (ModelState.IsValid)
+    
+        if (ModelState.IsValid)
         {
             try
             {
-              await  _progressService.UpdateProgressAsync(progress);
-              return RedirectToAction("Update", "Progress");
+                await _progressService.UpdateProgressAsync(progress);
+                return RedirectToAction("Index", "Goal");
+            }
+            catch (ArgumentException)
+            {
+                return NotFound();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to update progress");
-                // If instance of goal does not exist in DB
-                if (!await _progressService.ProgressExistsAsync(progress.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Unable to update instance of progress");
-                }
+                ModelState.AddModelError("", "Unable to update instance of progress");
             }
         }
         return View(progress);
