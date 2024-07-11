@@ -5,17 +5,19 @@ using App.Services;
 using App.Models;
 using System;
 
-namespace App.Services;
+namespace App.Controllers;
 
 public class GoalController : Controller
 {
     private readonly ILogger<GoalController> _logger;
     private readonly IGoalService _goalService;
+     private readonly IProgressService _progressService;
     
-    public GoalController(ILogger<GoalController> logger, IGoalService goalService)
+    public GoalController(ILogger<GoalController> logger, IGoalService goalService, IProgressService progressService)
     {
         _logger = logger;
         _goalService = goalService;
+        _progressService = progressService;
     }
     
     public async Task<IActionResult> Index()
@@ -49,7 +51,9 @@ public class GoalController : Controller
         {
             try
             {
-                await _goalService.CreateGoalAsync(goal);
+                var newGoal = await _goalService.CreateGoalAsync(goal);
+                var newProgress = await _progressService.CreateProgressAsync(newGoal.Id);
+                
                 TempData["SuccessMessage"] = "Goal added";
                 return RedirectToAction("Index", "Home");
             }

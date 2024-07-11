@@ -12,6 +12,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // GoalService Registration
 builder.Services.AddScoped<IGoalService, GoalService>();
+builder.Services.AddScoped<IProgressService, ProgressService>();
     
 var app = builder.Build();
 
