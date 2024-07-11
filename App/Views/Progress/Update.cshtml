@@ -9,24 +9,23 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Update">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <form asp-action="Update" asp-controller="Progress" method="post">
             <input type="hidden" asp-for="Id" />
-
+            <input type="hidden" asp-for="GoalId" />
+        
             <div class="form-group">
                 <div class="form-check">
                     <input asp-for="Completed" class="form-check-input" type="checkbox" />
                     <label asp-for="Completed" class="form-check-label"></label>
                 </div>
-                <span asp-validation-for="Completed" class="text-danger"></span>
             </div>
-
+        
             <div class="form-group">
                 <label asp-for="Notes" class="control-label"></label>
                 <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
-
+        
             <div class="form-group mt-3">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>

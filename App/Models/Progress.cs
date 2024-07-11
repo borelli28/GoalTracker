@@ -9,10 +9,8 @@ public class Progress
     [StringLength(10)]
     public string Id { get; set; } = Guid.NewGuid().ToString().Substring(0, 10);
 
-    [Required]
     public DateTime Date { get; set; } = DateTime.UtcNow;
 
-    [Required]
     public bool Completed { get; set; } = false;
 
     [StringLength(90)]

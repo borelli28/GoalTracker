@@ -51,7 +51,13 @@ public class ProgressService : IProgressService
     
     public async Task UpdateProgressAsync(Progress progress)
     {
-        _context.Update(progress);
+        var existingProgress = await GetProgressByIdAsync(progress.Id);
+        if (existingProgress == null)
+        {
+            throw new ArgumentException("Progress not found", nameof(progress));
+        }
+        existingProgress.Completed = progress.Completed;
+        existingProgress.Notes = progress.Notes;
         await _context.SaveChangesAsync();
     }
     
