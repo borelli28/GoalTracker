@@ -29,11 +29,20 @@ public class GoalController : Controller
             {
                 return View(null);
             }
-            return View(goals);
+
+            var goalsWithProgress = new List<(Goal Goal, Progress LastProgress)>();
+
+            foreach (var goal in goals)
+            {
+                var lastProgress = await _progressService.GetLastProgressInstance(goal.Id);
+                goalsWithProgress.Add((goal, lastProgress));
+            }
+
+            return View(goalsWithProgress);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occured while fetching goals");
+            _logger.LogError(ex, "Error occurred while fetching goals");
             return View(null);
         }
     }

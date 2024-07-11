@@ -1,4 +1,4 @@
-@model IEnumerable<App.Models.Goal>
+@model List<(App.Models.Goal Goal, App.Models.Progress LastProgress)>
 
 @{
     ViewData["Title"] = "Goals";
@@ -14,7 +14,7 @@
 <div class="text-center">
     <h1 class="display-4">Goals</h1>
     <div>
-        @if (Model == null)
+        @if (Model == null || !Model.Any())
         {
             <h6>No goals found</h6>
         }
@@ -23,7 +23,6 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Id</th>
                         <th>Name</th>
                         <th>Description</th>
                         <th>Creation Date</th>
@@ -31,22 +30,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var goal in Model)
+                    @foreach (var (goal, lastProgress) in Model)
                     {
                         <tr>
-                            <td>@goal.Id</td>
                             <td>@goal.Name</td>
                             <td>@goal.Description</td>
                             <td>@goal.CreatedAt</td>
                             <td>
                                 <a asp-action="Update" asp-controller="Goal" asp-route-id="@goal.Id">Edit</a> |
-                                <a asp-action="Delete" asp-controller="Goal" asp-route-id="@goal.Id">Delete</a>
+                                <a asp-action="Delete" asp-controller="Goal" asp-route-id="@goal.Id">Delete</a> |
+                                <a asp-action="Update" asp-controller="Progress" asp-route-id="@lastProgress.Id">Update Progress</a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         }
-        <a asp-action="Create" asp-controller="Goal" class="btn btn-primary">Create New</a>
+        <a asp-action="Create" asp-controller="Goal" class="btn btn-primary">Create New Goal</a>
     </div>
 </div>
