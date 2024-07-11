@@ -172,5 +172,29 @@ namespace App.UnitTests.Services
             // Assert
             Assert.IsFalse(result);
         }
+        
+        [Test]
+        public async Task GetLastProgressInstance_ShouldReturnMostRecentProgress()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Test Goal" };
+            await _goalService.CreateGoalAsync(goal);
+        
+            var progress1 = new Progress { GoalId = goal.Id, Date = DateTime.UtcNow.AddDays(-2) };
+            var progress2 = new Progress { GoalId = goal.Id, Date = DateTime.UtcNow.AddDays(-1) };
+            var progress3 = new Progress { GoalId = goal.Id, Date = DateTime.UtcNow };
+        
+            await _progressService.CreateProgressAsync(goal.Id, progress1);
+            await _progressService.CreateProgressAsync(goal.Id, progress2);
+            await _progressService.CreateProgressAsync(goal.Id, progress3);
+        
+            // Act
+            var result = await _progressService.GetLastProgressInstance(goal.Id);
+        
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.That(result.Id, Is.EqualTo(progress3.Id));
+            Assert.That(result.Date, Is.EqualTo(progress3.Date));
+        }
     }
 }
