@@ -16,6 +16,7 @@ public interface IProgressService
     Task<IEnumerable<Progress>> GetAllProgressAsync();
     Task<bool> ProgressExistsAsync(string id);
     Task<Progress> GetLastProgressInstance(string goalId);
+    Task<List<Progress>> GetProgressesForGoalAsync(string goalId, DateTime startDate);
 }
 
 public class ProgressService : IProgressService
@@ -87,5 +88,13 @@ public class ProgressService : IProgressService
             .Where(p => p.GoalId == goalId)
             .OrderByDescending(p => p.Date)
             .FirstOrDefaultAsync();
+    }
+    
+    public async Task<List<Progress>> GetProgressesForGoalAsync(string goalId, DateTime startDate)
+    {
+        return await _context.Progresses
+            .Where(p => p.GoalId == goalId && p.Date >= startDate)
+            .OrderBy(p => p.Date)
+            .ToListAsync();
     }
 }
