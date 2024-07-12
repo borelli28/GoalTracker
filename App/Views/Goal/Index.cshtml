@@ -56,26 +56,26 @@
 
 @section Scripts {
     <script>
-        @foreach (var (goal, progresses) in Model)
-        {
-            <text>
-            var data_@goal.Id = [
-                @foreach (var progress in progresses)
-                {
-                    <text>{ date: "@progress.Date.ToString("yyyy-MM-dd")", value: @(progress.Completed ? 1 : 0) },</text>
-                }
-            ];
+        document.addEventListener('DOMContentLoaded', function() {
+            @foreach (var (goal, progresses) in Model)
+            {
+                @:var data_@(goal.Id.Replace("-", "_")) = [
+                    @foreach (var progress in progresses)
+                    {
+                        @:{date: "@progress.Date.ToString("yyyy-MM-dd")", value: @(progress.Completed ? 1 : 0)},
+                    }
+                @:];
 
-            var cal_@goal.Id = new CalHeatmap();
-            cal_@goal.Id.paint({
-                data: { source: data_@goal.Id, x: 'date', y: 'value' },
-                date: { start: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) },
-                range: 12,
-                scale: { color: { type: 'threshold', range: ['#EBEDF0', '#9BE9A8', '#40C463', '#30A14E', '#216E39'] } },
-                domain: { type: 'month' },
-                subDomain: { type: 'day', radius: 2 }
-            }, [[0, 0, 0, 'cal-heatmap-@goal.Id']]);
-            </text>
-        }
+                @:var cal_@(goal.Id.Replace("-", "_")) = new CalHeatmap();
+                @:cal_@(goal.Id.Replace("-", "_")).paint({
+                @:    data: { source: data_@(goal.Id.Replace("-", "_")) },
+                @:    date: { start: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) },
+                @:    range: 12,
+                @:    scale: { color: { type: 'threshold', range: ['#EBEDF0', '#9BE9A8', '#40C463', '#30A14E', '#216E39'] } },
+                @:    domain: { type: 'month' },
+                @:    subDomain: { type: 'day', radius: 2 }
+                @:}, [[0, 0, 0, 'cal-heatmap-@goal.Id']]);
+            }
+        });
     </script>
 }
