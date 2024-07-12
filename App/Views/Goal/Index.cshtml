@@ -1,4 +1,4 @@
-@model List<(App.Models.Goal Goal, App.Models.Progress LastProgress)>
+@model List<(App.Models.Goal Goal, List<App.Models.Progress> Progresses)>
 
 @{
     ViewData["Title"] = "Goals";
@@ -26,20 +26,24 @@
                         <th>Name</th>
                         <th>Description</th>
                         <th>Creation Date</th>
+                        <th>Progress</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var (goal, lastProgress) in Model)
+                    @foreach (var (goal, progresses) in Model)
                     {
                         <tr>
                             <td>@goal.Name</td>
                             <td>@goal.Description</td>
                             <td>@goal.CreatedAt</td>
                             <td>
+                                <div id="cal-heatmap-@goal.Id"></div>
+                            </td>
+                            <td>
                                 <a asp-action="Update" asp-controller="Goal" asp-route-id="@goal.Id">Edit</a> |
                                 <a asp-action="Delete" asp-controller="Goal" asp-route-id="@goal.Id">Delete</a> |
-                                <a asp-action="Update" asp-controller="Progress" asp-route-id="@lastProgress.Id">Update Progress</a>
+                                <a asp-action="Update" asp-controller="Progress" asp-route-id="@(progresses.LastOrDefault()?.Id)">Update Progress</a>
                             </td>
                         </tr>
                     }
@@ -49,3 +53,29 @@
         <a asp-action="Create" asp-controller="Goal" class="btn btn-primary">Create New Goal</a>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        @foreach (var (goal, progresses) in Model)
+        {
+            <text>
+            var data_@goal.Id = [
+                @foreach (var progress in progresses)
+                {
+                    <text>{ date: "@progress.Date.ToString("yyyy-MM-dd")", value: @(progress.Completed ? 1 : 0) },</text>
+                }
+            ];
+
+            var cal_@goal.Id = new CalHeatmap();
+            cal_@goal.Id.paint({
+                data: { source: data_@goal.Id, x: 'date', y: 'value' },
+                date: { start: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) },
+                range: 12,
+                scale: { color: { type: 'threshold', range: ['#EBEDF0', '#9BE9A8', '#40C463', '#30A14E', '#216E39'] } },
+                domain: { type: 'month' },
+                subDomain: { type: 'day', radius: 2 }
+            }, [[0, 0, 0, 'cal-heatmap-@goal.Id']]);
+            </text>
+        }
+    </script>
+}
