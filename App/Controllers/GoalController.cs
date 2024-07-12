@@ -30,12 +30,11 @@ public class GoalController : Controller
                 return View(null);
             }
 
-            var goalsWithProgress = new List<(Goal Goal, Progress LastProgress)>();
-
+            var goalsWithProgress = new List<(Goal Goal, List<Progress> Progresses)>();
             foreach (var goal in goals)
             {
-                var lastProgress = await _progressService.GetLastProgressInstance(goal.Id);
-                goalsWithProgress.Add((goal, lastProgress));
+                var progresses = await _progressService.GetProgressesForGoalAsync(goal.Id, DateTime.UtcNow.AddYears(-1));
+                goalsWithProgress.Add((goal, progresses));
             }
 
             return View(goalsWithProgress);
