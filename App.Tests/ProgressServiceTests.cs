@@ -263,5 +263,98 @@ namespace App.UnitTests.Services
             Assert.IsNotNull(result);
             Assert.AreEqual(0, result.Count);
         }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldCreateInstancesForAllGoalsInRange()
+        {
+            // Arrange
+            var goal1 = new Goal { Id = "1", Name = "Goal 1" };
+            var goal2 = new Goal { Id = "2", Name = "Goal 2" };
+            await _goalService.CreateGoalAsync(goal1);
+            await _goalService.CreateGoalAsync(goal2);
+        
+            var startDate = DateTime.UtcNow.Date;
+            var endDate = startDate.AddDays(5);
+        
+            // Act
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Assert
+            var allProgresses = await _context.Progresses.ToListAsync();
+            Assert.That(allProgresses.Count, Is.EqualTo(12)); // 2 goals * 6 days (inclusive)
+            Assert.That(allProgresses.Count(p => p.GoalId == goal1.Id), Is.EqualTo(6));
+            Assert.That(allProgresses.Count(p => p.GoalId == goal2.Id), Is.EqualTo(6));
+            Assert.That(allProgresses.All(p => p.Date >= startDate && p.Date <= endDate));
+        }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldNotCreateDuplicateInstances()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Goal 1" };
+            await _goalService.CreateGoalAsync(goal);
+        
+            var startDate = DateTime.UtcNow.Date;
+            var endDate = startDate.AddDays(5);
+        
+            // Create some initial progress instances
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Act
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Assert
+            var allProgresses = await _context.Progresses.ToListAsync();
+            Assert.That(allProgresses.Count, Is.EqualTo(6)); // Still only 6 instances (1 goal * 6 days)
+        }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldCreateInstancesForFutureDates()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Goal 1" };
+            await _goalService.CreateGoalAsync(goal);
+        
+            var startDate = DateTime.UtcNow.Date.AddDays(1);
+            var endDate = startDate.AddDays(30);
+        
+            // Act
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Assert
+            var allProgresses = await _context.Progresses.ToListAsync();
+            Assert.That(allProgresses.Count, Is.EqualTo(31)); // 1 goal * 31 days
+            Assert.That(allProgresses.All(p => p.Date >= startDate && p.Date <= endDate));
+        }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldHandleEmptyGoalList()
+        {
+            // Arrange
+            var startDate = DateTime.UtcNow.Date;
+            var endDate = startDate.AddDays(5);
+        
+            // Act
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Assert
+            var allProgresses = await _context.Progresses.ToListAsync();
+            Assert.That(allProgresses.Count, Is.EqualTo(0));
+        }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldHandleInvalidDateRange()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Goal 1" };
+            await _goalService.CreateGoalAsync(goal);
+        
+            var startDate = DateTime.UtcNow.Date;
+            var endDate = startDate.AddDays(-5); // End date before start date
+        
+            // Act & Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => 
+                await _progressService.CreateProgressInstancesForDateRange(startDate, endDate));
+        }
     }
 }
