@@ -101,6 +101,11 @@ public class ProgressService : IProgressService
     
     public async Task CreateProgressInstancesForDateRange(DateTime startDate, DateTime endDate)
     {
+        if (endDate < startDate)
+        {
+            throw new ArgumentException("End date must be after start date", nameof(endDate));
+        }
+    
         var goals = await _context.Goals.ToListAsync();
         var dateRange = Enumerable.Range(0, (endDate - startDate).Days + 1)
                                   .Select(offset => startDate.AddDays(offset));
