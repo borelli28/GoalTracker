@@ -7,11 +7,13 @@ using System;
 
 namespace App.Controllers;
 
-public class GoalController : Controller
+[Route("api/[controller]")]
+[ApiController]
+public class GoalController : ControllerBase
 {
     private readonly ILogger<GoalController> _logger;
     private readonly IGoalService _goalService;
-     private readonly IProgressService _progressService;
+    private readonly IProgressService _progressService;
     
     public GoalController(ILogger<GoalController> logger, IGoalService goalService, IProgressService progressService)
     {
@@ -20,127 +22,95 @@ public class GoalController : Controller
         _progressService = progressService;
     }
     
-    public async Task<IActionResult> Index()
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] Goal goal)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var newGoal = await _goalService.CreateGoalAsync(goal);
+            var newProgress = await _progressService.CreateProgressAsync(newGoal.Id);
+            
+            return CreatedAtAction(nameof(Get), new { id = newGoal.Id }, newGoal);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error creating goal: {ex}");
+            return StatusCode(500, "An error occurred while creating the goal.");
+        }
+    }
+    
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(string id)
+    {
+        var goal = await _goalService.GetGoalByIdAsync(id);
+        if (goal == null)
+        {
+            return NotFound();
+        }
+        return Ok(goal);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
     {
         try
         {
             var goals = await _goalService.GetAllGoalsAsync();
-            if (!goals.Any())
-            {
-                return View(null);
-            }
-
-            var goalsWithProgress = new List<(Goal Goal, Progress LastProgress)>();
-
-            foreach (var goal in goals)
-            {
-                var lastProgress = await _progressService.GetLastProgressInstance(goal.Id);
-                goalsWithProgress.Add((goal, lastProgress));
-            }
-
-            return View(goalsWithProgress);
+            return Ok(goals);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while fetching goals");
-            return View(null);
+            _logger.LogError(ex, "Error retrieving all goals");
+            return StatusCode(500, "An error occurred while retrieving goals.");
         }
     }
     
-    public IActionResult Create()
-    {
-        return View();
-    }
-    
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Name,Description")] Goal goal)
-    {
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                var newGoal = await _goalService.CreateGoalAsync(goal);
-                var newProgress = await _progressService.CreateProgressAsync(newGoal.Id);
-                
-                TempData["SuccessMessage"] = "Goal added";
-                return RedirectToAction("Index", "Home");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error creating goal: {ex}");
-                ModelState.AddModelError("", "Unable to create Goal");
-            }
-        }
-        return View(goal);
-    }
-    
-    public async Task<IActionResult> Update(string id)
-    {
-        var goal = await _goalService.GetGoalByIdAsync(id);
-        if (goal == null)
-        {
-            return NotFound();
-        }
-        return View(goal);
-    }
-    
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Update(string id, [Bind("Id,Name,Description")] Goal goal)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(string id, [FromBody] Goal goal)
     {
         if (id != goal.Id)
         {
-            return NotFound();
+            return BadRequest("Goal ID mismatch");
         }
-        else if (ModelState.IsValid)
+
+        if (!ModelState.IsValid)
         {
-            try
-            {
-              await  _goalService.UpdateGoalAsync(goal);
-              return RedirectToAction("Index", "Home");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to update goal");
-                // If instance of goal does not exist in DB
-                if (!await _goalService.GoalExistsAsync(goal.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Unable to update instance of goal");
-                }
-            }
+            return BadRequest(ModelState);
         }
-        return View(goal);
+
+        try
+        {
+            await _goalService.UpdateGoalAsync(goal);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to update goal");
+            if (!await _goalService.GoalExistsAsync(goal.Id))
+            {
+                return NotFound();
+            }
+            return StatusCode(500, "An error occurred while updating the goal.");
+        }
     }
     
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
-    {   
-        var goal = await _goalService.GetGoalByIdAsync(id);
-        if (goal == null)
-        {
-            return NotFound();
-        }
-        return View(goal);
-    }
-    
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(string id)
     {
         try
         {
             await _goalService.DeleteGoalAsync(id);
-            TempData["SuccessMessage"] = "Goal deleted";
-            return RedirectToAction("Index", "Goal");
+            return NoContent();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Exception raised while deleting goal");
-            return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while deleting the goal.");
+            return StatusCode(500, "An error occurred while deleting the goal.");
         }
     }
 }

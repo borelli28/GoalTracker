@@ -196,5 +196,165 @@ namespace App.UnitTests.Services
             Assert.That(result.Id, Is.EqualTo(progress3.Id));
             Assert.That(result.Date, Is.EqualTo(progress3.Date));
         }
+        
+        [Test]
+        public async Task GetProgressesForGoalAsync_ShouldReturnProgressesWithinDateRange()
+        {
+            // Arrange
+            var goalId = "goal1";
+            var startDate = DateTime.UtcNow.AddDays(-10);
+
+            var progresses = new List<Progress>
+            {
+                new Progress { Id = "1", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-15), Completed = false },
+                new Progress { Id = "2", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-5), Completed = true },
+                new Progress { Id = "3", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-1), Completed = false },
+                new Progress { Id = "4", GoalId = "goal2", Date = DateTime.UtcNow.AddDays(-5), Completed = true }
+            };
+
+            await _context.Progresses.AddRangeAsync(progresses);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _progressService.GetProgressesForGoalAsync(goalId, startDate);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count);
+            Assert.IsTrue(result.All(p => p.GoalId == goalId));
+            Assert.IsTrue(result.All(p => p.Date >= startDate));
+        }
+
+        [Test]
+        public async Task GetProgressesForGoalAsync_ShouldReturnEmptyListWhenNoProgresses()
+        {
+            // Arrange
+            var goalId = "goal1";
+            var startDate = DateTime.UtcNow.AddDays(-10);
+
+            // Act
+            var result = await _progressService.GetProgressesForGoalAsync(goalId, startDate);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count);
+        }
+
+        [Test]
+        public async Task GetProgressesForGoalAsync_ShouldReturnEmptyListWhenNoProgressesInDateRange()
+        {
+            // Arrange
+            var goalId = "goal1";
+            var startDate = DateTime.UtcNow.AddDays(-5);
+
+            var progresses = new List<Progress>
+            {
+                new Progress { Id = "1", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-15), Completed = false },
+                new Progress { Id = "2", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-10), Completed = true },
+            };
+
+            await _context.Progresses.AddRangeAsync(progresses);
+            await _context.SaveChangesAsync();
+
+            // Act
+            var result = await _progressService.GetProgressesForGoalAsync(goalId, startDate);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count);
+        }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldCreateInstancesForAllGoalsInRange()
+        {
+            // Arrange
+            var goal1 = new Goal { Id = "1", Name = "Goal 1" };
+            var goal2 = new Goal { Id = "2", Name = "Goal 2" };
+            await _goalService.CreateGoalAsync(goal1);
+            await _goalService.CreateGoalAsync(goal2);
+        
+            var startDate = DateTime.UtcNow.Date;
+            var endDate = startDate.AddDays(5);
+        
+            // Act
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Assert
+            var allProgresses = await _context.Progresses.ToListAsync();
+            Assert.That(allProgresses.Count, Is.EqualTo(12)); // 2 goals * 6 days (inclusive)
+            Assert.That(allProgresses.Count(p => p.GoalId == goal1.Id), Is.EqualTo(6));
+            Assert.That(allProgresses.Count(p => p.GoalId == goal2.Id), Is.EqualTo(6));
+            Assert.That(allProgresses.All(p => p.Date >= startDate && p.Date <= endDate));
+        }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldNotCreateDuplicateInstances()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Goal 1" };
+            await _goalService.CreateGoalAsync(goal);
+        
+            var startDate = DateTime.UtcNow.Date;
+            var endDate = startDate.AddDays(5);
+        
+            // Create some initial progress instances
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Act
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Assert
+            var allProgresses = await _context.Progresses.ToListAsync();
+            Assert.That(allProgresses.Count, Is.EqualTo(6)); // Still only 6 instances (1 goal * 6 days)
+        }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldCreateInstancesForFutureDates()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Goal 1" };
+            await _goalService.CreateGoalAsync(goal);
+        
+            var startDate = DateTime.UtcNow.Date.AddDays(1);
+            var endDate = startDate.AddDays(30);
+        
+            // Act
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Assert
+            var allProgresses = await _context.Progresses.ToListAsync();
+            Assert.That(allProgresses.Count, Is.EqualTo(31)); // 1 goal * 31 days
+            Assert.That(allProgresses.All(p => p.Date >= startDate && p.Date <= endDate));
+        }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldHandleEmptyGoalList()
+        {
+            // Arrange
+            var startDate = DateTime.UtcNow.Date;
+            var endDate = startDate.AddDays(5);
+        
+            // Act
+            await _progressService.CreateProgressInstancesForDateRange(startDate, endDate);
+        
+            // Assert
+            var allProgresses = await _context.Progresses.ToListAsync();
+            Assert.That(allProgresses.Count, Is.EqualTo(0));
+        }
+        
+        [Test]
+        public async Task CreateProgressInstancesForDateRange_ShouldHandleInvalidDateRange()
+        {
+            // Arrange
+            var goal = new Goal { Id = "1", Name = "Goal 1" };
+            await _goalService.CreateGoalAsync(goal);
+        
+            var startDate = DateTime.UtcNow.Date;
+            var endDate = startDate.AddDays(-5); // End date before start date
+        
+            // Act & Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => 
+                await _progressService.CreateProgressInstancesForDateRange(startDate, endDate));
+        }
     }
 }

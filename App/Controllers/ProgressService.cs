@@ -16,6 +16,8 @@ public interface IProgressService
     Task<IEnumerable<Progress>> GetAllProgressAsync();
     Task<bool> ProgressExistsAsync(string id);
     Task<Progress> GetLastProgressInstance(string goalId);
+    Task<List<Progress>> GetProgressesForGoalAsync(string goalId, DateTime startDate);
+    Task CreateProgressInstancesForDateRange(DateTime startDate, DateTime endDate);
 }
 
 public class ProgressService : IProgressService
@@ -87,5 +89,44 @@ public class ProgressService : IProgressService
             .Where(p => p.GoalId == goalId)
             .OrderByDescending(p => p.Date)
             .FirstOrDefaultAsync();
+    }
+    
+    public async Task<List<Progress>> GetProgressesForGoalAsync(string goalId, DateTime startDate)
+    {
+        return await _context.Progresses
+            .Where(p => p.GoalId == goalId && p.Date >= startDate)
+            .OrderBy(p => p.Date)
+            .ToListAsync();
+    }
+    
+    public async Task CreateProgressInstancesForDateRange(DateTime startDate, DateTime endDate)
+    {
+        if (endDate < startDate)
+        {
+            throw new ArgumentException("End date must be after start date", nameof(endDate));
+        }
+    
+        var goals = await _context.Goals.ToListAsync();
+        var dateRange = Enumerable.Range(0, (endDate - startDate).Days + 1)
+                                  .Select(offset => startDate.AddDays(offset));
+
+        foreach (var goal in goals)
+        {
+            foreach (var date in dateRange)
+            {
+                if (!await _context.Progresses.AnyAsync(p => p.GoalId == goal.Id && p.Date == date))
+                {
+                    _context.Progresses.Add(new Progress
+                    {
+                        GoalId = goal.Id,
+                        Date = date,
+                        Completed = false,
+                        Notes = string.Empty
+                    });
+                }
+            }
+        }
+
+        await _context.SaveChangesAsync();
     }
 }
