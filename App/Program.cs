@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using App.Data;
 using App.Services;
+using App.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -13,7 +13,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // GoalService Registration
 builder.Services.AddScoped<IGoalService, GoalService>();
 builder.Services.AddScoped<IProgressService, ProgressService>();
-    
+
+// CORS Config
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontEndApp",
+        builder => builder.WithOrigins("http://localhost:3000")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,14 +34,12 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-
 app.UseRouting();
+
+app.UseCors("AllowFrontEndApp");
 
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllers();
 
 app.Run();
