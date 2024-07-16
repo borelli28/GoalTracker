@@ -76,6 +76,18 @@ p {
   background-color: #0051bb;
 }
 
+.react-calendar-heatmap .color-empty {
+  fill: #eeeeee;
+}
+
+.react-calendar-heatmap .color-scale-0 {
+  fill: #d6e685;
+}
+
+.react-calendar-heatmap .color-scale-1 {
+  fill: #44a340;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   html {
