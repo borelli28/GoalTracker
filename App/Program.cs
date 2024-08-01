@@ -23,7 +23,7 @@ builder.Services.AddScoped<IProgressService, ProgressService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontEndApp",
-        builder => builder.WithOrigins("http://localhost:3000")
+        builder => builder.WithOrigins("http://localhost:5173")
                           .AllowAnyMethod()
                           .AllowAnyHeader());
 });
