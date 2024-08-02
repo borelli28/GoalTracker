@@ -1,11 +1,12 @@
-# Created by https://www.toptal.com/developers/gitignore/api/svelte,dotnetcore,node
-# Edit at https://www.toptal.com/developers/gitignore?templates=svelte,dotnetcore,node
+# Created by https://www.toptal.com/developers/gitignore/api/node,dotnetcore,react
+# Edit at https://www.toptal.com/developers/gitignore?templates=node,dotnetcore,react
 
 ### DotnetCore ###
 # .NET Core build folders
 bin/
 obj/
 
+# Sqlite
 *.db
 
 # Common node modules locations
@@ -152,11 +153,17 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-### Svelte ###
-# gitignore template for the SvelteKit, frontend web component framework
-# website: https://kit.svelte.dev/
+### react ###
+.DS_*
+**/*.backup.*
+**/*.back.*
 
-.svelte-kit/
-package
+node_modules
 
-# End of https://www.toptal.com/developers/gitignore/api/svelte,dotnetcore,node
+*.sublime*
+
+psd
+thumb
+sketch
+
+# End of https://www.toptal.com/developers/gitignore/api/node,dotnetcore,react
