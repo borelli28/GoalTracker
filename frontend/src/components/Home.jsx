@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import CreateGoalForm from './CreateGoal';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const App = () => {
+const Home = () => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,7 +45,6 @@ const App = () => {
 
   return (
     <div>
-      <h1>My Goal App</h1>
       {goals.length === 0 ? (
         <div>
           <p>No goals found. Create your first goal!</p>
@@ -58,6 +58,7 @@ const App = () => {
               <li key={goal.id}>
                 <h3>{goal.name}</h3>
                 <p>{goal.description}</p>
+                <Link to={`/edit/${goal.id}`}>Edit</Link>
               </li>
             ))}
           </ul>
@@ -67,4 +68,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Home;
