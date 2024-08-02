@@ -35,6 +35,17 @@ const Home = () => {
     setGoals(prevGoals => [...prevGoals, newGoal]);
   };
 
+  const handleDeleteGoal = async (id) => {
+    if (window.confirm('Are you sure you want to delete this goal?')) {
+      try {
+        await axios.delete(`${API_URL}/api/Goal/${id}`);
+        setGoals(prevGoals => prevGoals.filter(goal => goal.id !== id));
+      } catch (err) {
+        setError('Failed to delete goal. Please try again.');
+      }
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -59,6 +70,7 @@ const Home = () => {
                 <h3>{goal.name}</h3>
                 <p>{goal.description}</p>
                 <Link to={`/edit/${goal.id}`}>Edit</Link>
+                <button onClick={() => handleDeleteGoal(goal.id)}>Delete</button>
               </li>
             ))}
           </ul>
