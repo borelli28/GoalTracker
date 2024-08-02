@@ -34,8 +34,7 @@ public class GoalController : ControllerBase
         {
             var newGoal = await _goalService.CreateGoalAsync(goal);
             var newProgress = await _progressService.CreateProgressAsync(newGoal.Id);
-            
-            return CreatedAtAction(nameof(Get), new { id = newGoal.Id }, newGoal);
+            return Ok(newGoal);
         }
         catch (Exception ex)
         {
