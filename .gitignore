@@ -6,8 +6,10 @@
 bin/
 obj/
 
-# Sqlite
+# Sqlite and migrations
 *.db
+migrations
+
 
 # Common node modules locations
 /node_modules
