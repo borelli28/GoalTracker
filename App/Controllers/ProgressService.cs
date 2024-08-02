@@ -23,12 +23,10 @@ public interface IProgressService
 public class ProgressService : IProgressService
 {
     private readonly AppDbContext _context;
-    private readonly IGoalService _goalService;
     
-    public ProgressService(AppDbContext context, IGoalService goalService)
+    public ProgressService(AppDbContext context)
     {
-        _context = context;
-        _goalService = goalService;
+        _context = context;;
     }
     
     public async Task<Progress> CreateProgressAsync(string goalId, Progress progress = null)
