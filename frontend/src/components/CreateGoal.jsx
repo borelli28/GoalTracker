@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const CreateGoalForm = () => {
+const API_URL = import.meta.env.VITE_API_URL;
+
+const CreateGoalForm = ({ onGoalCreated }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -13,7 +15,7 @@ const CreateGoalForm = () => {
     setSuccess(false);
 
     try {
-      const response = await axios.post('http://localhost:5295/api/Goal', {
+      const response = await axios.post(`${API_URL}/api/Goal`, {
         name,
         description
       });
@@ -22,10 +24,10 @@ const CreateGoalForm = () => {
         setSuccess(true);
         setName('');
         setDescription('');
+        onGoalCreated(response.data);
       }
     } catch (err) {
       setError('Failed to create goal. Please try again.');
-      console.error('Error creating goal:', err);
     }
   };
 

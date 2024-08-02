@@ -1,11 +1,68 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import CreateGoalForm from './CreateGoal';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const App = () => {
+  const [goals, setGoals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchGoals();
+  }, []);
+
+  const fetchGoals = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/api/Goal`);
+      
+      if (response.data && Array.isArray(response.data.$values)) {
+        setGoals(response.data.$values);
+      } else {
+        setError('Received unexpected data format from server.');
+      }
+    } catch (err) {
+      setError('Failed to fetch goals. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoalCreated = (newGoal) => {
+    setGoals(prevGoals => [...prevGoals, newGoal]);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div>
       <h1>My Goal App</h1>
-      <CreateGoalForm />
+      {goals.length === 0 ? (
+        <div>
+          <p>No goals found. Create your first goal!</p>
+          <CreateGoalForm onGoalCreated={handleGoalCreated} />
+        </div>
+      ) : (
+        <div>
+          <h2>Your Goals</h2>
+          <ul>
+            {goals.map((goal) => (
+              <li key={goal.id}>
+                <h3>{goal.name}</h3>
+                <p>{goal.description}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
