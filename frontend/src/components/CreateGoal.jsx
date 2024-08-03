@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const CreateGoal = ({ onGoalCreated }) => {
+const CreateGoal = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -24,7 +24,6 @@ const CreateGoal = ({ onGoalCreated }) => {
         setSuccess(true);
         setName('');
         setDescription('');
-        onGoalCreated(response.data);
       }
     } catch (err) {
       setError('Failed to create goal. Please try again.');
