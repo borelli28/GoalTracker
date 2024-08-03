@@ -51,13 +51,26 @@ public class ProgressService : IProgressService
     
     public async Task UpdateProgressAsync(Progress progress)
     {
-        var existingProgress = await GetProgressByIdAsync(progress.Id);
+        var existingProgress = await _context.Progresses
+            .FirstOrDefaultAsync(p => p.GoalId == progress.GoalId && p.Date.Date == progress.Date.Date);
+
         if (existingProgress == null)
         {
-            throw new ArgumentException("Progress not found", nameof(progress));
+            existingProgress = new Progress
+            {
+                GoalId = progress.GoalId,
+                Date = progress.Date.Date,
+                Completed = progress.Completed,
+                Notes = progress.Notes
+            };
+            _context.Progresses.Add(existingProgress);
         }
-        existingProgress.Completed = progress.Completed;
-        existingProgress.Notes = progress.Notes;
+        else
+        {
+            existingProgress.Completed = progress.Completed;
+            existingProgress.Notes = progress.Notes;
+        }
+
         await _context.SaveChangesAsync();
     }
     
