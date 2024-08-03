@@ -32,13 +32,13 @@ const CreateGoal = ({ onGoalCreated }) => {
   };
 
   return (
-    <div>
-      <h2>Create New Goal</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>Goal created successfully!</p>}
+    <div className="max-w-md mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">Create New Goal</h2>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {success && <p className="text-green-500 mb-4">Goal created successfully!</p>}
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Name:</label>
+        <div className="mb-4">
+          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Name:</label>
           <input
             type="text"
             id="name"
@@ -46,18 +46,25 @@ const CreateGoal = ({ onGoalCreated }) => {
             onChange={(e) => setName(e.target.value)}
             required
             maxLength={30}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
-        <div>
-          <label htmlFor="description">Description:</label>
+        <div className="mb-6">
+          <label htmlFor="description" className="block text-gray-700 text-sm font-bold mb-2">Description:</label>
           <textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             maxLength={90}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-24"
           />
         </div>
-        <button type="submit">Create Goal</button>
+        <button 
+          type="submit" 
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        >
+          Create Goal
+        </button>
       </form>
     </div>
   );
