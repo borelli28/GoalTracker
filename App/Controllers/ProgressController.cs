@@ -50,6 +50,13 @@ public class ProgressController : ControllerBase
         }
         return Ok(progress);
     }
+    
+    [HttpGet("goal/{goalId}")]
+    public async Task<IActionResult> GetProgressForGoal(string goalId, [FromQuery] DateTime startDate)
+    {
+        var progress = await _progressService.GetProgressesForGoalAsync(goalId, startDate);
+        return Ok(progress);
+    }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] Progress progress)
