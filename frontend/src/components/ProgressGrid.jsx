@@ -37,22 +37,14 @@ const ProgressGrid = ({ goalId }) => {
 
   const handleSquareClick = async (date) => {
     try {
-      const progressForDate = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
-      
-      if (progressForDate) {
-        // If progress exists, toggle the completed status
-        const updatedProgress = { ...progressForDate, completed: !progressForDate.completed };
-        await axios.put(`${API_URL}/api/Progress/${progressForDate.id}`, updatedProgress);
-      } else {
-        // If progress doesn't exist, create a new one
-        const newProgress = {
-          goalId: goalId,
-          date: date.toISOString(),
-          completed: true
-        };
-        await axios.post(`${API_URL}/api/Progress`, newProgress);
-      }
-      
+      const updatedProgress = {
+        goalId: goalId,
+        date: date.toISOString(),
+        completed: true
+      };
+
+      await axios.put(`${API_URL}/api/Progress`, updatedProgress);
+
       // Refresh the progress data
       await fetchProgressData();
       setError(null); // Clear any previous errors
