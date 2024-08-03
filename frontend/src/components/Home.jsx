@@ -70,6 +70,7 @@ const Home = () => {
                 <h3 className="text-lg font-semibold text-gray-800">{goal.name}</h3>
                 <ProgressGrid goalId={goal.id} />
                 <div className="mt-2 flex space-x-3">
+                  <Link to={`/goal/${goal.id}`} className="text-indigo-600 hover:text-indigo-800">View Goal</Link>
                   <Link to={`/edit/${goal.id}`} className="text-indigo-600 hover:text-indigo-800">Edit</Link>
                   <button onClick={() => handleDeleteGoal(goal.id)} className="text-red-600 hover:text-red-800">Delete</button>
                 </div>
