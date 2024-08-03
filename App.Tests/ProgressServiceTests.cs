@@ -216,7 +216,7 @@ namespace App.UnitTests.Services
             var result = await _progressService.GetProgressesForGoalAsync(goalId, startDate);
     
             // Assert
-            Assert.AreEqual(6, result.Count);
+            Assert.That(6, Is.EqualTo(result.Count));
             Assert.IsTrue(result.Any(p => p.Date == startDate.AddDays(1) && p.Completed));
             Assert.IsTrue(result.Any(p => p.Date == startDate.AddDays(3) && p.Completed));
             Assert.IsTrue(result.All(p => p.GoalId == goalId));
