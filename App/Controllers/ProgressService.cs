@@ -9,13 +9,13 @@ namespace App.Services;
 
 public interface IProgressService
 {
-    Task<Progress> CreateProgressAsync(string goalId, Progress progress = null);
+    Task<Progress> CreateProgressAsync(string goalId, Progress? progress = null);
     Task<Progress?> GetProgressByIdAsync(string id);
     Task UpdateProgressAsync(Progress progress);
     Task DeleteProgressAsync(string id);
     Task<IEnumerable<Progress>> GetAllProgressAsync();
     Task<bool> ProgressExistsAsync(string id);
-    Task<Progress> GetLastProgressInstance(string goalId);
+    Task<Progress?> GetLastProgressInstance(string goalId);
     Task<List<Progress>> GetProgressesForGoalAsync(string goalId, DateTime startDate);
     Task CreateProgressInstancesForDateRange(DateTime startDate, DateTime endDate);
 }
@@ -29,7 +29,7 @@ public class ProgressService : IProgressService
         _context = context;
     }
     
-    public async Task<Progress> CreateProgressAsync(string goalId, Progress progress = null)
+    public async Task<Progress> CreateProgressAsync(string goalId, Progress? progress = null)
     {
         if (progress == null)
         {
@@ -94,7 +94,7 @@ public class ProgressService : IProgressService
         return await _context.Progresses.AnyAsync(e => e.Id == id);
     }
     
-    public async Task<Progress> GetLastProgressInstance(string goalId)
+    public async Task<Progress?> GetLastProgressInstance(string goalId)
     {
         return await _context.Progresses
             .Where(p => p.GoalId == goalId)
