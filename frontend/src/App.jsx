@@ -13,7 +13,6 @@ const App = () => {
               <div className="flex items-center">
                 <Link to="/" className="text-xl font-bold text-indigo-600">GoalTracker</Link>
                 <div className="ml-6 space-x-4">
-                  <Link to="/" className="text-gray-500 hover:text-gray-800">Home</Link>
                   <Link to="/create" className="text-gray-500 hover:text-gray-800">Create Goal</Link>
                 </div>
               </div>
