@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const CreateGoalForm = ({ onGoalCreated }) => {
+const CreateGoal = ({ onGoalCreated }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -63,4 +63,4 @@ const CreateGoalForm = ({ onGoalCreated }) => {
   );
 };
 
-export default CreateGoalForm;
+export default CreateGoal;
