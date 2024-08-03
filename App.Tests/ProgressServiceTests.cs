@@ -1,9 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NUnit.Framework;
 using App.Services;
-using System.Linq;
 using App.Models;
 using App.Data;
 
@@ -12,8 +8,8 @@ namespace App.UnitTests.Services
     [TestFixture]
     public class ProgressServiceTests
     {
-        private AppDbContext _context;
-        private IProgressService _progressService;
+        private AppDbContext _context = null!;
+        private IProgressService _progressService = null!;
     
         [SetUp]
         public void Setup()
@@ -85,7 +81,7 @@ namespace App.UnitTests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.That(result.Id, Is.EqualTo(progress.Id));
+            Assert.That(result?.Id, Is.EqualTo(progress.Id));
         }
 
         [Test]
@@ -105,7 +101,7 @@ namespace App.UnitTests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.That(result.Completed, Is.EqualTo(true));
+            Assert.That(result?.Completed, Is.EqualTo(true));
         }
 
         [Test]
@@ -191,8 +187,8 @@ namespace App.UnitTests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.That(result.Id, Is.EqualTo(progress3.Id));
-            Assert.That(result.Date, Is.EqualTo(progress3.Date));
+            Assert.That(result?.Id, Is.EqualTo(progress3.Id));
+            Assert.That(result?.Date, Is.EqualTo(progress3.Date));
         }
 
         [Test]

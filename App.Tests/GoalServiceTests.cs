@@ -1,9 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NUnit.Framework;
 using App.Services;
-using System.Linq;
 using App.Models;
 using App.Data;
 
@@ -12,8 +8,8 @@ namespace App.UnitTests.Services
     [TestFixture]
     public class GoalServiceTests
     {
-        private AppDbContext _context;
-        private IGoalService _goalService;
+        private AppDbContext _context = null!;
+        private IGoalService _goalService = null!;
 
         [SetUp]
         public void SetUp()
@@ -78,7 +74,7 @@ namespace App.UnitTests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.That(result.Name, Is.EqualTo("Updated Goal"));
+            Assert.That(result?.Name, Is.EqualTo("Updated Goal"));
         }
         
         [Test]
