@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import CreateGoalForm from './CreateGoal';
+import ProgressGrid from './ProgressGrid';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -69,6 +70,7 @@ const Home = () => {
               <li key={goal.id}>
                 <h3>{goal.name}</h3>
                 <p>{goal.description}</p>
+                <ProgressGrid goalId={goal.id} />
                 <Link to={`/edit/${goal.id}`}>Edit</Link>
                 <button onClick={() => handleDeleteGoal(goal.id)}>Delete</button>
               </li>
