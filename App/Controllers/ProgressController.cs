@@ -58,14 +58,9 @@ public class ProgressController : ControllerBase
         return Ok(progress);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] Progress progress)
+    [HttpPut]
+    public async Task<IActionResult> UpdateProgress([FromBody] Progress progress)
     {
-        if (id != progress.Id)
-        {
-            return BadRequest("Progress ID mismatch");
-        }
-
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -75,10 +70,6 @@ public class ProgressController : ControllerBase
         {
             await _progressService.UpdateProgressAsync(progress);
             return NoContent();
-        }
-        catch (ArgumentException)
-        {
-            return NotFound();
         }
         catch (Exception ex)
         {
