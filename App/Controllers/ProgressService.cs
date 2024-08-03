@@ -91,10 +91,26 @@ public class ProgressService : IProgressService
     
     public async Task<List<Progress>> GetProgressesForGoalAsync(string goalId, DateTime startDate)
     {
-        return await _context.Progresses
-            .Where(p => p.GoalId == goalId && p.Date >= startDate)
-            .OrderBy(p => p.Date)
+        var endDate = DateTime.UtcNow;
+        var allDates = Enumerable.Range(0, (endDate - startDate).Days + 1)
+                                 .Select(offset => startDate.AddDays(offset))
+                                 .ToList();
+    
+        var existingProgress = await _context.Progresses
+            .Where(p => p.GoalId == goalId && p.Date >= startDate && p.Date <= endDate)
             .ToListAsync();
+    
+        var result = allDates.Select(date => 
+            existingProgress.FirstOrDefault(p => p.Date.Date == date.Date) ?? 
+            new Progress 
+            { 
+                GoalId = goalId, 
+                Date = date, 
+                Completed = false 
+            }
+        ).ToList();
+    
+        return result;
     }
     
     public async Task CreateProgressInstancesForDateRange(DateTime startDate, DateTime endDate)
