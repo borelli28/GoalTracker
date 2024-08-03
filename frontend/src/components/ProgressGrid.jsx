@@ -9,30 +9,58 @@ const ProgressGrid = ({ goalId }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchProgressData = async () => {
-      try {
-        setLoading(true);
-        const endDate = new Date();
-        const startDate = new Date(endDate);
-        startDate.setMonth(startDate.getMonth() - 2);
-        
-        const response = await axios.get(`${API_URL}/api/Progress/goal/${goalId}?startDate=${startDate.toISOString()}`);
-        
-        if (response.data && Array.isArray(response.data.$values)) {
-          setProgressData(response.data.$values);
-        } else {
-          setError('Received unexpected data format from server.');
-        }
-      } catch (err) {
-        console.error('Error fetching progress data:', err);
-        setError('Failed to fetch progress data.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProgressData();
   }, [goalId]);
+
+  const fetchProgressData = async () => {
+    try {
+      setLoading(true);
+      const endDate = new Date();
+      const startDate = new Date(endDate);
+      startDate.setMonth(startDate.getMonth() - 2);
+      
+      const response = await axios.get(`${API_URL}/api/Progress/goal/${goalId}?startDate=${startDate.toISOString()}`);
+      
+      if (response.data && Array.isArray(response.data.$values)) {
+        setProgressData(response.data.$values);
+      } else {
+        console.error('Unexpected data format:', response.data);
+        setError('Received unexpected data format from server.');
+      }
+    } catch (err) {
+      console.error('Error fetching progress data:', err);
+      setError('Failed to fetch progress data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSquareClick = async (date) => {
+    try {
+      const progressForDate = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
+      
+      if (progressForDate) {
+        // If progress exists, toggle the completed status
+        const updatedProgress = { ...progressForDate, completed: !progressForDate.completed };
+        await axios.put(`${API_URL}/api/Progress/${progressForDate.id}`, updatedProgress);
+      } else {
+        // If progress doesn't exist, create a new one
+        const newProgress = {
+          goalId: goalId,
+          date: date.toISOString(),
+          completed: true
+        };
+        await axios.post(`${API_URL}/api/Progress`, newProgress);
+      }
+      
+      // Refresh the progress data
+      await fetchProgressData();
+      setError(null); // Clear any previous errors
+    } catch (err) {
+      console.error('Error updating progress:', err.response || err.message || err);
+      setError('Failed to update progress. Please try again.');
+    }
+  };
 
   const getColor = (completed) => {
     return completed ? '#196127' : '#ebedf0';
@@ -54,9 +82,6 @@ const ProgressGrid = ({ goalId }) => {
     return dateArray;
   };
 
-  if (loading) return <div>Loading progress data...</div>;
-  if (error) return <div>Error: {error}</div>;
-
   const dateArray = generateDateArray();
 
   const gridStyle = {
@@ -73,6 +98,7 @@ const ProgressGrid = ({ goalId }) => {
     borderRadius: '2px',
     fontSize: '8px',
     color: '#333',
+    cursor: 'pointer',
   };
 
   const contentStyle = {
@@ -89,25 +115,30 @@ const ProgressGrid = ({ goalId }) => {
   };
 
   return (
-    <div style={gridStyle}>
-      {dateArray.map((date, index) => {
-        const progressForDate = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
-        return (
-          <div
-            key={index}
-            style={{
-              ...squareStyle,
-              backgroundColor: getColor(progressForDate?.completed || false),
-            }}
-            title={`Date: ${date.toLocaleDateString()}, Completed: ${progressForDate?.completed ? 'Yes' : 'No'}`}
-          >
-            <div style={contentStyle}>
-              <div>{date.getDate()}</div>
-              <div>{date.toLocaleString('default', { month: 'short' })}</div>
+    <div>
+      {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+      {loading && <div>Loading progress data...</div>}
+      <div style={gridStyle}>
+        {dateArray.map((date, index) => {
+          const progressForDate = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
+          return (
+            <div
+              key={index}
+              style={{
+                ...squareStyle,
+                backgroundColor: getColor(progressForDate?.completed || false),
+              }}
+              onClick={() => handleSquareClick(date)}
+              title={`Date: ${date.toLocaleDateString()}, Completed: ${progressForDate?.completed ? 'Yes' : 'No'}`}
+            >
+              <div style={contentStyle}>
+                <div>{date.getDate()}</div>
+                <div>{date.toLocaleString('default', { month: 'short' })}</div>
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };
