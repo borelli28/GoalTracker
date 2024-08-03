@@ -13,7 +13,6 @@ namespace App.UnitTests.Services
     public class ProgressServiceTests
     {
         private AppDbContext _context;
-        private IGoalService _goalService;
         private IProgressService _progressService;
     
         [SetUp]
@@ -24,7 +23,6 @@ namespace App.UnitTests.Services
                 .Options;
                 
             _context = new AppDbContext(options);
-            _goalService = new GoalService(_context);
             _progressService = new ProgressService(_context);
         }
         
