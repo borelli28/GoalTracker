@@ -8,10 +8,15 @@ namespace App.Data
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
+            // Ensure DbSet properties are not null
+            if (Goals == null || Progresses == null)
+            {
+                throw new InvalidOperationException("DbSet properties must be initialized.");
+            }
         }
-
-        public DbSet<Goal> Goals { get; set; }
-        public DbSet<Progress> Progresses { get; set; }
+    
+        public DbSet<Goal> Goals { get; set; } = null!;
+        public DbSet<Progress> Progresses { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
