@@ -19,6 +19,6 @@ public class Progress
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
     
     [Required]
-    public string GoalId { get; set; }
+    public required string GoalId { get; set; }
     public Goal? Goal { get; set; }
 }
