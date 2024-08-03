@@ -26,7 +26,7 @@ public class ProgressService : IProgressService
     
     public ProgressService(AppDbContext context)
     {
-        _context = context;;
+        _context = context;
     }
     
     public async Task<Progress> CreateProgressAsync(string goalId, Progress progress = null)
