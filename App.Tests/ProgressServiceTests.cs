@@ -85,7 +85,7 @@ namespace App.UnitTests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.That(result.Id, Is.EqualTo(progress.Id));
+            Assert.That(result?.Id, Is.EqualTo(progress.Id));
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace App.UnitTests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.That(result.Completed, Is.EqualTo(true));
+            Assert.That(result?.Completed, Is.EqualTo(true));
         }
 
         [Test]
@@ -191,8 +191,8 @@ namespace App.UnitTests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.That(result.Id, Is.EqualTo(progress3.Id));
-            Assert.That(result.Date, Is.EqualTo(progress3.Date));
+            Assert.That(result?.Id, Is.EqualTo(progress3.Id));
+            Assert.That(result?.Date, Is.EqualTo(progress3.Date));
         }
 
         [Test]

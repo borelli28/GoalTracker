@@ -78,7 +78,7 @@ namespace App.UnitTests.Services
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.That(result.Name, Is.EqualTo("Updated Goal"));
+            Assert.That(result?.Name, Is.EqualTo("Updated Goal"));
         }
         
         [Test]
