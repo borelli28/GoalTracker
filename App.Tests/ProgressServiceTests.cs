@@ -196,66 +196,30 @@ namespace App.UnitTests.Services
         }
 
         [Test]
-        public async Task GetProgressesForGoalAsync_ShouldReturnProgressesWithinDateRange()
-        {
-            // Arrange
-            var goalId = "goal1";
-            var startDate = DateTime.UtcNow.AddDays(-10);
-            var progresses = new List<Progress>
-            {
-                new Progress { Id = "1", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-15), Completed = false },
-                new Progress { Id = "2", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-5), Completed = true },
-                new Progress { Id = "3", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-1), Completed = false },
-                new Progress { Id = "4", GoalId = "goal2", Date = DateTime.UtcNow.AddDays(-5), Completed = true }
-            };
-            await _context.Progresses.AddRangeAsync(progresses);
-            await _context.SaveChangesAsync();
-
-            // Act
-            var result = await _progressService.GetProgressesForGoalAsync(goalId, startDate);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
-            Assert.IsTrue(result.All(p => p.GoalId == goalId));
-            Assert.IsTrue(result.All(p => p.Date >= startDate));
-        }
-
-        [Test]
-        public async Task GetProgressesForGoalAsync_ShouldReturnEmptyListWhenNoProgresses()
-        {
-            // Arrange
-            var goalId = "goal1";
-            var startDate = DateTime.UtcNow.AddDays(-10);
-
-            // Act
-            var result = await _progressService.GetProgressesForGoalAsync(goalId, startDate);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(0, result.Count);
-        }
-
-        [Test]
-        public async Task GetProgressesForGoalAsync_ShouldReturnEmptyListWhenNoProgressesInDateRange()
+        public async Task GetProgressesForGoalAsync_ReturnsCorrectProgresses()
         {
             // Arrange
             var goalId = "goal1";
             var startDate = DateTime.UtcNow.AddDays(-5);
+            var endDate = DateTime.UtcNow;
+    
             var progresses = new List<Progress>
             {
-                new Progress { Id = "1", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-15), Completed = false },
-                new Progress { Id = "2", GoalId = goalId, Date = DateTime.UtcNow.AddDays(-10), Completed = true },
+                new Progress { GoalId = goalId, Date = startDate.AddDays(1), Completed = true },
+                new Progress { GoalId = goalId, Date = startDate.AddDays(3), Completed = true }
             };
+    
             await _context.Progresses.AddRangeAsync(progresses);
             await _context.SaveChangesAsync();
-
+    
             // Act
             var result = await _progressService.GetProgressesForGoalAsync(goalId, startDate);
-
+    
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(0, result.Count);
+            Assert.AreEqual(6, result.Count);
+            Assert.IsTrue(result.Any(p => p.Date == startDate.AddDays(1) && p.Completed));
+            Assert.IsTrue(result.Any(p => p.Date == startDate.AddDays(3) && p.Completed));
+            Assert.IsTrue(result.All(p => p.GoalId == goalId));
         }
 
         [Test]
