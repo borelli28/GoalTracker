@@ -25,7 +25,7 @@ namespace App.UnitTests.Services
                 
             _context = new AppDbContext(options);
             _goalService = new GoalService(_context);
-            _progressService = new ProgressService(_context, _goalService);
+            _progressService = new ProgressService(_context);
         }
         
         [TearDown]
