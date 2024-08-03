@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import Home from './components/Home';
 import CreateGoalForm from './components/CreateGoal';
 import EditGoalForm from './components/EditGoal';
+import GoalPage from './components/GoalPage';
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<CreateGoalForm />} />
             <Route path="/edit/:id" element={<EditGoalForm />} />
+            <Route path="/goal/:id" element={<GoalPage />} />
           </Routes>
         </main>
       </div>
