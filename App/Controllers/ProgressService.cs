@@ -9,13 +9,13 @@ namespace App.Services;
 
 public interface IProgressService
 {
-    Task<Progress> CreateProgressAsync(string goalId, Progress progress = null);
+    Task<Progress> CreateProgressAsync(string goalId, Progress? progress = null);
     Task<Progress?> GetProgressByIdAsync(string id);
     Task UpdateProgressAsync(Progress progress);
     Task DeleteProgressAsync(string id);
     Task<IEnumerable<Progress>> GetAllProgressAsync();
     Task<bool> ProgressExistsAsync(string id);
-    Task<Progress> GetLastProgressInstance(string goalId);
+    Task<Progress?> GetLastProgressInstance(string goalId);
     Task<List<Progress>> GetProgressesForGoalAsync(string goalId, DateTime startDate);
     Task CreateProgressInstancesForDateRange(DateTime startDate, DateTime endDate);
 }
@@ -26,10 +26,10 @@ public class ProgressService : IProgressService
     
     public ProgressService(AppDbContext context)
     {
-        _context = context;;
+        _context = context;
     }
     
-    public async Task<Progress> CreateProgressAsync(string goalId, Progress progress = null)
+    public async Task<Progress> CreateProgressAsync(string goalId, Progress? progress = null)
     {
         if (progress == null)
         {
@@ -51,13 +51,26 @@ public class ProgressService : IProgressService
     
     public async Task UpdateProgressAsync(Progress progress)
     {
-        var existingProgress = await GetProgressByIdAsync(progress.Id);
+        var existingProgress = await _context.Progresses
+            .FirstOrDefaultAsync(p => p.GoalId == progress.GoalId && p.Date.Date == progress.Date.Date);
+
         if (existingProgress == null)
         {
-            throw new ArgumentException("Progress not found", nameof(progress));
+            existingProgress = new Progress
+            {
+                GoalId = progress.GoalId,
+                Date = progress.Date.Date,
+                Completed = progress.Completed,
+                Notes = progress.Notes
+            };
+            _context.Progresses.Add(existingProgress);
         }
-        existingProgress.Completed = progress.Completed;
-        existingProgress.Notes = progress.Notes;
+        else
+        {
+            existingProgress.Completed = progress.Completed;
+            existingProgress.Notes = progress.Notes;
+        }
+
         await _context.SaveChangesAsync();
     }
     
@@ -81,7 +94,7 @@ public class ProgressService : IProgressService
         return await _context.Progresses.AnyAsync(e => e.Id == id);
     }
     
-    public async Task<Progress> GetLastProgressInstance(string goalId)
+    public async Task<Progress?> GetLastProgressInstance(string goalId)
     {
         return await _context.Progresses
             .Where(p => p.GoalId == goalId)
@@ -91,10 +104,26 @@ public class ProgressService : IProgressService
     
     public async Task<List<Progress>> GetProgressesForGoalAsync(string goalId, DateTime startDate)
     {
-        return await _context.Progresses
-            .Where(p => p.GoalId == goalId && p.Date >= startDate)
-            .OrderBy(p => p.Date)
+        var endDate = DateTime.UtcNow;
+        var allDates = Enumerable.Range(0, (endDate - startDate).Days + 1)
+                                 .Select(offset => startDate.AddDays(offset))
+                                 .ToList();
+    
+        var existingProgress = await _context.Progresses
+            .Where(p => p.GoalId == goalId && p.Date >= startDate && p.Date <= endDate)
             .ToListAsync();
+    
+        var result = allDates.Select(date => 
+            existingProgress.FirstOrDefault(p => p.Date.Date == date.Date) ?? 
+            new Progress 
+            { 
+                GoalId = goalId, 
+                Date = date, 
+                Completed = false 
+            }
+        ).ToList();
+    
+        return result;
     }
     
     public async Task CreateProgressInstancesForDateRange(DateTime startDate, DateTime endDate)
