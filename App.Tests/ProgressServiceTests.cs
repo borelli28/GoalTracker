@@ -1,9 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NUnit.Framework;
 using App.Services;
-using System.Linq;
 using App.Models;
 using App.Data;
 
@@ -12,8 +8,8 @@ namespace App.UnitTests.Services
     [TestFixture]
     public class ProgressServiceTests
     {
-        private AppDbContext _context;
-        private IProgressService _progressService;
+        private AppDbContext _context = null!;
+        private IProgressService _progressService = null!;
     
         [SetUp]
         public void Setup()
