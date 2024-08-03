@@ -37,10 +37,13 @@ const ProgressGrid = ({ goalId }) => {
 
   const handleSquareClick = async (date) => {
     try {
+      const existingProgress = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
+      
       const updatedProgress = {
         goalId: goalId,
         date: date.toISOString(),
-        completed: true
+        // Sets completed to opposite. Allows to set/unset Progress.Completed OnClick
+        completed: existingProgress ? !existingProgress.completed : true
       };
 
       await axios.put(`${API_URL}/api/Progress`, updatedProgress);
