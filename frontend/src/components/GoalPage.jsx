@@ -48,18 +48,23 @@ const GoalPage = () => {
 
   const handleProgressToggle = async (date) => {
     try {
-      const existingProgress = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
+      const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const existingProgress = progressData.find(p => {
+        const progressDate = new Date(p.date);
+        return progressDate.getUTCFullYear() === utcDate.getUTCFullYear() &&
+               progressDate.getUTCMonth() === utcDate.getUTCMonth() &&
+               progressDate.getUTCDate() === utcDate.getUTCDate();
+      });
       
       const updatedProgress = {
         goalId: id,
-        date: date.toISOString(),
+        date: utcDate.toISOString(),
         completed: existingProgress ? !existingProgress.completed : true
       };
 
       await axios.put(`${API_URL}/api/Progress`, updatedProgress);
       await fetchGoalAndProgress();
     } catch (err) {
-      console.error('Error updating progress:', err);
       setError('Failed to update progress. Please try again.');
     }
   };
@@ -100,7 +105,13 @@ const GoalPage = () => {
       </div>
       <div className="grid grid-cols-7 gap-1">
         {dateArray.map((date, index) => {
-          const progressForDate = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
+          const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+          const progressForDate = progressData.find(p => {
+            const progressDate = new Date(p.date);
+            return progressDate.getUTCFullYear() === utcDate.getUTCFullYear() &&
+                   progressDate.getUTCMonth() === utcDate.getUTCMonth() &&
+                   progressDate.getUTCDate() === utcDate.getUTCDate();
+          });
           return (
             <div
               key={index}
