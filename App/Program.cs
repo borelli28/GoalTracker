@@ -43,6 +43,11 @@ app.UseCors("AllowFrontEndApp");
 
 app.UseAuthorization();
 
+app.MapGet("/", (HttpContext context) => 
+{
+    var port = context.Connection.LocalPort;
+    return $"This server is running at http://localhost:{port}";
+});
 app.MapControllers();
 
 app.Run();
