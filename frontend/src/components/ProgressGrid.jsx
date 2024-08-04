@@ -58,16 +58,15 @@ const ProgressGrid = ({ goalId }) => {
   };
 
   const generateDateArray = () => {
-    const endDate = new Date();
-    const startDate = new Date(endDate);
-    startDate.setMonth(startDate.getMonth() - 2);
+    const endDate = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
+    const startDate = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth() - 2, endDate.getUTCDate()));
     
     const dateArray = [];
     let currentDate = new Date(startDate);
     
     while (currentDate <= endDate) {
       dateArray.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
     }
     
     return dateArray;
