@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import CreateGoalForm from './CreateGoal';
 import ProgressGrid from './ProgressGrid';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -29,10 +28,6 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleGoalCreated = (newGoal) => {
-    setGoals(prevGoals => [...prevGoals, newGoal]);
   };
 
   const handleDeleteGoal = async (id) => {
