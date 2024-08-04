@@ -99,9 +99,9 @@ const ProgressGrid = ({ goalId }) => {
         textColor="#1F2328"
         startsOnSunday={true}
         includeBoundary={true}
-        theme="cherry"
-        cx={10}
-        cy={10}
+        theme="vomit"
+        cx={30}
+        cy={30}
         cr={2}
         onCellClick={handleCellClick}
         scroll={false}

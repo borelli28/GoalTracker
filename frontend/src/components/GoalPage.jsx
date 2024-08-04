@@ -123,9 +123,9 @@ const GoalPage = () => {
         textColor="#1F2328"
         startsOnSunday={true}
         includeBoundary={true}
-        theme="cherry"
-        cx={10}
-        cy={10}
+        theme="vomit"
+        cx={14}
+        cy={14}
         cr={2}
         onCellClick={handleCellClick}
         scroll={false}
