@@ -35,27 +35,26 @@ const ProgressGrid = ({ goalId }) => {
 
   const handleSquareClick = async (date) => {
     try {
-      const existingProgress = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
+      const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const existingProgress = progressData.find(p => {
+        const progressDate = new Date(p.date);
+        return progressDate.getUTCFullYear() === utcDate.getUTCFullYear() &&
+               progressDate.getUTCMonth() === utcDate.getUTCMonth() &&
+               progressDate.getUTCDate() === utcDate.getUTCDate();
+      });
       
       const updatedProgress = {
         goalId: goalId,
-        date: date.toISOString(),
+        date: utcDate.toISOString(),
         // Sets completed to opposite. Allows to set/unset Progress.Completed OnClick
         completed: existingProgress ? !existingProgress.completed : true
       };
 
       await axios.put(`${API_URL}/api/Progress`, updatedProgress);
-
       await fetchProgressData();
-      setError(null); // Clear any previous errors
     } catch (err) {
-      console.error('Error updating progress:', err.response || err.message || err);
       setError('Failed to update progress. Please try again.');
     }
-  };
-
-  const getColor = (completed) => {
-    return completed ? '#196127' : '#ebedf0';
   };
 
   const generateDateArray = () => {
@@ -112,13 +111,19 @@ const ProgressGrid = ({ goalId }) => {
       {loading && <div>Loading progress data...</div>}
       <div style={gridStyle}>
         {dateArray.map((date, index) => {
-          const progressForDate = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
+          const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+          const progressForDate = progressData.find(p => {
+            const progressDate = new Date(p.date);
+            return progressDate.getUTCFullYear() === utcDate.getUTCFullYear() &&
+                   progressDate.getUTCMonth() === utcDate.getUTCMonth() &&
+                   progressDate.getUTCDate() === utcDate.getUTCDate();
+          });
           return (
             <div
               key={index}
               style={{
                 ...squareStyle,
-                backgroundColor: getColor(progressForDate?.completed || false),
+                backgroundColor: progressForDate?.completed ? '#196127' : '#ebedf0',
               }}
               onClick={() => handleSquareClick(date)}
               title={`Date: ${date.toLocaleDateString()}, Completed: ${progressForDate?.completed ? 'Yes' : 'No'}`}
