@@ -1,5 +1,5 @@
 # Goals Tracker
-Web app to track progress of daily goals throught the months.
+Web app to track the progress of daily goals throughout the months.
 
 ![Goal Tracker](/images/goal-tracker.png)
 ![Goal Tracker](/images/goal-tracker1.png)
