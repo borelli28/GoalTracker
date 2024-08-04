@@ -43,9 +43,40 @@ const ProgressGrid = ({ goalId }) => {
     }, {})];
   };
 
-  const handleCellClick = (e, data) => {
-    console.log('Cell clicked:', data);
-  };  
+  const handleCellClick = async (e, cellData) => {
+    const date = cellData.date;
+    const currentData = progressData[0][date];
+    
+    if (!currentData) {
+      return;
+    }
+
+    const updatedCompleted = currentData.level === 0;
+    
+    try {
+      const response = await axios.put(`${API_URL}/api/Progress`, {
+        id: currentData.id,
+        date: date,
+        completed: updatedCompleted,
+        goalId: goalId
+      });
+
+      if (response.status === 204) {
+        // Update the progress data for a specific date,
+        // changing the level based on completion status
+        setProgressData(prevData => [{
+          ...prevData[0],
+          [date]: {
+            ...prevData[0][date],
+            level: updatedCompleted ? 3 : 0
+          }
+        }]);
+      }
+    } catch (error) {
+      console.error('Error updating progress:', error);
+      setError('Failed to update progress. Please try again.');
+    }
+  };
 
   if (loading) {
     return <div>Loading progress...</div>;
