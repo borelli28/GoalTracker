@@ -4,6 +4,7 @@ Web app to track progress of daily goals throught the months.
 ### Setup
 Clone the repository:
 `git clone https://github.com/borelli28/GoalTracker.git`
+
 `cd GoalTracker`
 
 ### Backend Setup
@@ -29,10 +30,10 @@ The API should now be running now
 Open a new terminal window and navigate to the frontend directory:
 `cd ../frontend`
 
-Install Node.js dependencies:
-`npm install`
+Install dependencies using Bun:
+`bun install`
 
-Start the React development server:
-`npm start`
+Start the Vite development server:
+`bun run dev`
 
-The frontend should now be accessible at http://localhost:3000.
+The frontend should now be accessible at http://localhost:5173 (or the port Vite assigns).
