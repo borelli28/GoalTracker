@@ -69,7 +69,7 @@ const ProgressGrid = ({ goalId }) => {
       currentDate.setUTCDate(currentDate.getUTCDate() + 1);
     }
     
-    return dateArray;
+    return dateArray.slice(2);
   };
 
   const dateArray = generateDateArray();
