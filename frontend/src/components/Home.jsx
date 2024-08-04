@@ -57,9 +57,13 @@ const Home = () => {
   return (
     <div className="bg-white shadow-md rounded-lg p-6">
       {goals.length === 0 ? (
-        <div>
-          <p className="text-lg text-gray-700 mb-4">No goals found. Create your first goal!</p>
-          <CreateGoalForm onGoalCreated={handleGoalCreated} />
+        <div className="flex flex-col items-center">
+          <p className="text-lg text-gray-700 mb-4">
+            No goals found. 
+            <a href="/create" className="text-blue-600 hover:text-blue-800 underline ml-1">
+              Create your first goal!
+            </a>
+          </p>
         </div>
       ) : (
         <div>
