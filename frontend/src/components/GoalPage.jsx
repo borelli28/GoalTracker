@@ -115,21 +115,23 @@ const GoalPage = () => {
           <span className="block sm:inline">{updateError}</span>
         </div>
       )}
-      <ContributionCalendar
-        data={progressData}
-        start={startDate.toISOString().split('T')[0]} // Start date
-        end={new Date().toISOString().split('T')[0]} // End date (today)
-        daysOfTheWeek={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
-        textColor="#1F2328"
-        startsOnSunday={true}
-        includeBoundary={true}
-        theme="vomit"
-        cx={14}
-        cy={14}
-        cr={2}
-        onCellClick={handleCellClick}
-        scroll={false}
-      />
+      <div className="bg-white shadow-md rounded-lg p-6"> {/* White card styling */}
+        <ContributionCalendar
+          data={progressData}
+          start={startDate.toISOString().split('T')[0]} // Start date
+          end={new Date().toISOString().split('T')[0]} // End date (today)
+          daysOfTheWeek={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+          textColor="#1F2328"
+          startsOnSunday={true}
+          includeBoundary={true}
+          theme="cherry"
+          cx={14}
+          cy={14}
+          cr={2}
+          onCellClick={handleCellClick}
+          scroll={false}
+        />
+      </div>
     </div>
   );
 };
