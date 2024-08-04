@@ -24,11 +24,9 @@ const ProgressGrid = ({ goalId }) => {
       if (response.data && Array.isArray(response.data.$values)) {
         setProgressData(response.data.$values);
       } else {
-        console.error('Unexpected data format:', response.data);
         setError('Received unexpected data format from server.');
       }
     } catch (err) {
-      console.error('Error fetching progress data:', err);
       setError('Failed to fetch progress data.');
     } finally {
       setLoading(false);
@@ -48,7 +46,6 @@ const ProgressGrid = ({ goalId }) => {
 
       await axios.put(`${API_URL}/api/Progress`, updatedProgress);
 
-      // Refresh the progress data
       await fetchProgressData();
       setError(null); // Clear any previous errors
     } catch (err) {

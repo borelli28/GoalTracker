@@ -26,7 +26,6 @@ const GoalPage = () => {
       setGoal(goalResponse.data);
       setProgressData(progressResponse);
     } catch (err) {
-      console.error('Error fetching goal and progress:', err);
       setError('Failed to fetch goal data. Please try again.');
     } finally {
       setLoading(false);
