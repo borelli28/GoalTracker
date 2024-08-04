@@ -35,17 +35,17 @@ const ProgressGrid = ({ goalId }) => {
 
   const handleSquareClick = async (date) => {
     try {
-      const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const clickedDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
       const existingProgress = progressData.find(p => {
         const progressDate = new Date(p.date);
-        return progressDate.getUTCFullYear() === utcDate.getUTCFullYear() &&
-               progressDate.getUTCMonth() === utcDate.getUTCMonth() &&
-               progressDate.getUTCDate() === utcDate.getUTCDate();
+        return progressDate.getUTCFullYear() === clickedDate.getUTCFullYear() &&
+               progressDate.getUTCMonth() === clickedDate.getUTCMonth() &&
+               progressDate.getUTCDate() === clickedDate.getUTCDate();
       });
       
       const updatedProgress = {
         goalId: goalId,
-        date: utcDate.toISOString(),
+        date: clickedDate.toISOString(),
         // Sets completed to opposite. Allows to set/unset Progress.Completed OnClick
         completed: existingProgress ? !existingProgress.completed : true
       };
