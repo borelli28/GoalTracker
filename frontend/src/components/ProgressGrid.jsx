@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ContributionCalendar } from 'react-contribution-calendar';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -7,7 +8,7 @@ const ProgressGrid = ({ goalId }) => {
   const [progressData, setProgressData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
   useEffect(() => {
     fetchProgressData();
   }, [goalId]);
@@ -15,125 +16,96 @@ const ProgressGrid = ({ goalId }) => {
   const fetchProgressData = async () => {
     try {
       setLoading(true);
+      
       const endDate = new Date();
       const startDate = new Date(endDate);
       startDate.setMonth(startDate.getMonth() - 2);
-      
       const response = await axios.get(`${API_URL}/api/Progress/goal/${goalId}?startDate=${startDate.toISOString()}`);
-      
+
       if (response.data && Array.isArray(response.data.$values)) {
-        setProgressData(response.data.$values);
+        const formattedData = formatDataToLevels(response.data.$values);
+        setProgressData(formattedData);
       } else {
-        console.error('Unexpected data format:', response.data);
         setError('Received unexpected data format from server.');
       }
     } catch (err) {
-      console.error('Error fetching progress data:', err);
       setError('Failed to fetch progress data.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSquareClick = async (date) => {
+  const formatDataToLevels = (data) => {
+    return [data.reduce((acc, item) => {
+      const date = new Date(item.date).toISOString().split('T')[0];
+      acc[date] = { level: item.completed ? 3 : 0 };
+      return acc;
+    }, {})];
+  };
+
+  const handleCellClick = async (e, cellData) => {
+    const date = cellData.date;
+    const currentData = progressData[0][date];
+    
+    if (!currentData) {
+      return;
+    }
+
+    const updatedCompleted = currentData.level === 0;
+    
     try {
-      const existingProgress = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
-      
-      const updatedProgress = {
-        goalId: goalId,
-        date: date.toISOString(),
-        // Sets completed to opposite. Allows to set/unset Progress.Completed OnClick
-        completed: existingProgress ? !existingProgress.completed : true
-      };
+      const response = await axios.put(`${API_URL}/api/Progress`, {
+        id: currentData.id,
+        date: date,
+        completed: updatedCompleted,
+        goalId: goalId
+      });
 
-      await axios.put(`${API_URL}/api/Progress`, updatedProgress);
-
-      // Refresh the progress data
-      await fetchProgressData();
-      setError(null); // Clear any previous errors
-    } catch (err) {
-      console.error('Error updating progress:', err.response || err.message || err);
+      if (response.status === 204) {
+        // Update the progress data for a specific date,
+        // changing the level based on completion status
+        setProgressData(prevData => [{
+          ...prevData[0],
+          [date]: {
+            ...prevData[0][date],
+            level: updatedCompleted ? 3 : 0
+          }
+        }]);
+      }
+    } catch (error) {
+      console.error('Error updating progress:', error);
       setError('Failed to update progress. Please try again.');
     }
   };
 
-  const getColor = (completed) => {
-    return completed ? '#196127' : '#ebedf0';
-  };
+  if (loading) {
+    return <div>Loading progress...</div>;
+  }
 
-  const generateDateArray = () => {
-    const endDate = new Date();
-    const startDate = new Date(endDate);
-    startDate.setMonth(startDate.getMonth() - 2);
-    
-    const dateArray = [];
-    let currentDate = new Date(startDate);
-    
-    while (currentDate <= endDate) {
-      dateArray.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    
-    return dateArray;
-  };
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
 
-  const dateArray = generateDateArray();
-
-  const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(7, 1fr)',
-    gap: '1px',
-    maxWidth: '300px',
-  };
-
-  const squareStyle = {
-    width: '100%',
-    paddingBottom: '100%',
-    position: 'relative',
-    borderRadius: '2px',
-    fontSize: '8px',
-    color: '#333',
-    cursor: 'pointer',
-  };
-
-  const contentStyle = {
-    position: 'absolute',
-    top: '0',
-    left: '0',
-    right: '0',
-    bottom: '0',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    lineHeight: '1',
-  };
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - 2);
 
   return (
     <div>
-      {error && <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
-      {loading && <div>Loading progress data...</div>}
-      <div style={gridStyle}>
-        {dateArray.map((date, index) => {
-          const progressForDate = progressData.find(p => new Date(p.date).toDateString() === date.toDateString());
-          return (
-            <div
-              key={index}
-              style={{
-                ...squareStyle,
-                backgroundColor: getColor(progressForDate?.completed || false),
-              }}
-              onClick={() => handleSquareClick(date)}
-              title={`Date: ${date.toLocaleDateString()}, Completed: ${progressForDate?.completed ? 'Yes' : 'No'}`}
-            >
-              <div style={contentStyle}>
-                <div>{date.getDate()}</div>
-                <div>{date.toLocaleString('default', { month: 'short' })}</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <ContributionCalendar
+        data={progressData}
+        start={startDate.toISOString().split('T')[0]} // Start date
+        end={new Date().toISOString().split('T')[0]} // End date (today)
+        daysOfTheWeek={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
+        textColor="#1F2328"
+        startsOnSunday={true}
+        includeBoundary={true}
+        theme="vomit"
+        cx={30}
+        cy={30}
+        cr={2}
+        onCellClick={handleCellClick}
+        scroll={false}
+      />
     </div>
   );
 };
