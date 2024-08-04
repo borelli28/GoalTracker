@@ -124,7 +124,7 @@ const GoalPage = () => {
           textColor="#1F2328"
           startsOnSunday={true}
           includeBoundary={true}
-          theme="cherry"
+          theme="vomit"
           cx={14}
           cy={14}
           cr={2}
