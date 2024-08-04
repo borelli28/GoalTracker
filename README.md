@@ -33,7 +33,7 @@ Open a new terminal window and navigate to the frontend directory:
 Install dependencies using Bun:
 `bun install`
 
-Create .env file with backend API URL
+Create .env file with the backend API URL
 `echo VITE_API_URL=http://localhost:5295 > .env`
 
 Start the Vite development server:
