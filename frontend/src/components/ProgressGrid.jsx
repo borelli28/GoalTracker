@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ContributionCalendar } from 'react-contribution-calendar'
+import { ContributionCalendar } from 'react-contribution-calendar';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -23,17 +23,24 @@ const ProgressGrid = ({ goalId }) => {
       const response = await axios.get(`${API_URL}/api/Progress/goal/${goalId}?startDate=${startDate.toISOString()}`);
 
       if (response.data && Array.isArray(response.data.$values)) {
-        setProgressData(response.data.$values);
+        const formattedData = formatDataToLevels(response.data.$values);
+        setProgressData(formattedData);
       } else {
-        console.error('Unexpected data format:', response.data);
         setError('Received unexpected data format from server.');
       }
     } catch (err) {
-      console.error('Error fetching progress data:', err);
       setError('Failed to fetch progress data.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatDataToLevels = (data) => {
+    return [data.reduce((acc, item) => {
+      const date = new Date(item.date).toISOString().split('T')[0];
+      acc[date] = { level: item.completed ? 3 : 0 };
+      return acc;
+    }, {})];
   };
 
   const handleCellClick = (e, data) => {
@@ -48,12 +55,15 @@ const ProgressGrid = ({ goalId }) => {
     return <div className="text-red-500">{error}</div>;
   }
 
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - 2);
+
   return (
     <div>
       <ContributionCalendar
         data={progressData}
-        start={new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0]} // Start of current year
-        end={new Date().toISOString().split('T')[0]} // Today
+        start={startDate.toISOString().split('T')[0]} // Start date
+        end={new Date().toISOString().split('T')[0]} // End date (today)
         daysOfTheWeek={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']}
         textColor="#1F2328"
         startsOnSunday={true}
