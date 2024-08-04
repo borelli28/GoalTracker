@@ -1,6 +1,9 @@
 # Goals Tracker
 Web app to track progress of daily goals throught the months.
 
+![Goal Tracker](/images/goal-tracker.png)
+![Goal Tracker](/images/goal-tracker1.png)
+
 ### Setup
 Clone the repository:
 `git clone https://github.com/borelli28/GoalTracker.git`
